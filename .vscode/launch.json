@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STM32 Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+
+            "showDevDebugOutput": "raw",
+            "servertype": "stlink",
+
+            "cwd": "${workspaceFolder}",
+
+            "executable": "${workspaceFolder}/build/Debug/Automatika_vody.elf",
+
+            "device": "STM32WL55JCI6",
+
+            "serialNumber": "003400395553500820393256",
+
+            "runToEntryPoint": "main",
+
+            "preLaunchTask": "build"
+        }
+    ]
+}

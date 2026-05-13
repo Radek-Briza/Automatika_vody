@@ -1,0 +1,13 @@
+{
+    "C_Cpp.intelliSenseEngine": "Default",
+    "C_Cpp.default.compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-g++.exe",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json",
+    "clangd.arguments": [
+        "--compile-commands-dir=build/Debug",
+        "--query-driver=C:/PROGRA~2/GNUARM~1/**,C:/Program Files (x86)/GNU Arm Embedded Toolchain/**"
+    ],
+    "cmake.cmakePath": "cube-cmake",
+    "cmake.configureArgs": [
+        "-DCMAKE_COMMAND=cube-cmake"
+    ]
+}
