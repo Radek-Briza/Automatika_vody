@@ -14,9 +14,7 @@
  
 void App::init()
 {
-    // inicializace (např. periferií)
 	DataTransmit::GetInstance().Init(&Radio,true); // Inicializace DataTransmitteru s nastavením MasterMode na true
-	
 	printf("Init device\r");
 }
 	

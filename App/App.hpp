@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <stdexcept>
 
+/* Payload parsing functions */
 template<typename T>
 inline uint32_t parse_le(const std::vector<uint8_t>& data, std::size_t index)
 {
@@ -48,7 +49,6 @@ public:
     void init();
     void loop();
 
-    private:
    
 };
 

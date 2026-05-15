@@ -65,7 +65,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TICK_HOOK                      0
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
-#define configMAX_PRIORITIES                     ( 56 )
+#define configMAX_PRIORITIES                     ( 7 )
 #define configUSE_SB_COMPLETED_CALLBACK          ( 0 )
 #define configUSE_MINI_LIST_ITEM                ( 1 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)

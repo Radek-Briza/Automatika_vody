@@ -21,7 +21,6 @@ uint16_t calculate_crc(std::span<uint8_t> data,uint16_t initial_value = 0xFFFFu)
         return 0xFFFFu;
     }
 
-
     extern CRC_HandleTypeDef hcrc;
     CRC_HandleTypeDef modbus_crc = hcrc;
 
@@ -37,15 +36,6 @@ uint16_t calculate_crc(std::span<uint8_t> data,uint16_t initial_value = 0xFFFFu)
     if (HAL_CRC_Init(&modbus_crc) != HAL_OK) {
         return 0xFFFFu;
     }
-
-    /*
-    printf("Calculating CRC, initial value: 0x%04X for data: ", initial_value);
-    for (auto const &byte : data) {
-        printf("%02X ", byte);
-    }
-    printf("\n");
-    */
-
     uint16_t crc = HAL_CRC_Calculate(&modbus_crc,
                                      reinterpret_cast<uint32_t*>(data.data()),
                                      static_cast<uint32_t>(data.size()));

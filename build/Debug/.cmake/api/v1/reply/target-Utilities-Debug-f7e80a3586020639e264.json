@@ -2,34 +2,25 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/croutine.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/trace/adv_trace/stm32_adv_trace.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_mem.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/list.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_systime.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/queue.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_tiny_sscanf.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_tiny_vsnprintf.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/tasks.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/timer/stm32_timer.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/timers.c.obj"
-		},
-		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c.obj"
-		},
-		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c.obj"
-		},
-		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/lpm/tiny_lpm/stm32_lpm.c.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -53,19 +44,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 159,
+				"line" : 154,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 161,
+				"line" : 156,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 160,
+				"line" : 155,
 				"parent" : 0
 			}
 		]
@@ -88,7 +79,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -224,14 +215,11 @@
 				3,
 				4,
 				5,
-				6,
-				7,
-				8,
-				9
+				6
 			]
 		}
 	],
-	"id" : "FreeRTOS::@768a070a0fe75716b479",
+	"id" : "Utilities::@768a070a0fe75716b479",
 	"interfaceCompileDependencies" : 
 	[
 		{
@@ -253,7 +241,7 @@
 			"id" : "stm32cubemx::@768a070a0fe75716b479"
 		}
 	],
-	"name" : "FreeRTOS",
+	"name" : "Utilities",
 	"paths" : 
 	{
 		"build" : "cmake/stm32cubemx",
@@ -271,10 +259,7 @@
 				3,
 				4,
 				5,
-				6,
-				7,
-				8,
-				9
+				6
 			]
 		}
 	],
@@ -283,61 +268,43 @@
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
+			"path" : "Utilities/trace/adv_trace/stm32_adv_trace.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
+			"path" : "Utilities/misc/stm32_mem.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/list.c",
+			"path" : "Utilities/misc/stm32_systime.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/queue.c",
+			"path" : "Utilities/misc/stm32_tiny_sscanf.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
+			"path" : "Utilities/misc/stm32_tiny_vsnprintf.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
+			"path" : "Utilities/timer/stm32_timer.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/timers.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 3,
-			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 3,
-			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 3,
-			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c",
+			"path" : "Utilities/lpm/tiny_lpm/stm32_lpm.c",
 			"sourceGroupIndex" : 0
 		}
 	],
