@@ -92,6 +92,10 @@ extern "C" {
 #define INCLUDE_xTaskGetSchedulerState         1
 #define INCLUDE_xTaskGetCurrentTaskHandle      1
 
+//#define vPortSVCHandler SVC_Handler
+//#define xPortPendSVHandler PendSV_Handler
+//#define xPortSysTickHandler SysTick_Handler
+
 #define configASSERT(x)                         \
     do                                          \
     {                                           \

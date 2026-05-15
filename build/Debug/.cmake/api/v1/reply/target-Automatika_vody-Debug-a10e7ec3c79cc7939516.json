@@ -516,6 +516,10 @@
 	[
 		{
 			"backtrace" : 3,
+			"id" : "Utilities::@768a070a0fe75716b479"
+		},
+		{
+			"backtrace" : 3,
 			"id" : "FreeRTOS::@768a070a0fe75716b479"
 		},
 		{
@@ -525,10 +529,6 @@
 		{
 			"backtrace" : 3,
 			"id" : "STM32_Drivers::@768a070a0fe75716b479"
-		},
-		{
-			"backtrace" : 3,
-			"id" : "Utilities::@768a070a0fe75716b479"
 		}
 	],
 	"id" : "Automatika_vody::@6890427a1f51a3e7e1df",

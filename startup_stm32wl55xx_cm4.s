@@ -140,11 +140,11 @@ g_pfnVectors:
   .word	0
   .word	0
   .word	0
-  .word	SVC_Handler
+  .word	vPortSVCHandler
   .word	DebugMon_Handler
   .word	0
-  .word	PendSV_Handler
-  .word	SysTick_Handler
+  .word	xPortPendSVHandler
+  .word	xPortSysTickHandler
   .word	WWDG_IRQHandler                      			/* Window Watchdog interrupt                          */
   .word	PVD_PVM_IRQHandler                   			/* PVD and PVM interrupt through EXTI                 */
   .word	TAMP_STAMP_LSECSS_SSRU_IRQHandler    			/* RTC Tamper, RTC TimeStamp, LSECSS and RTC SSRU int.*/
