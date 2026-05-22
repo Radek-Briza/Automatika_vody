@@ -84,35 +84,35 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Automatika_vody::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Automatika_vody-Debug-7650d8884060e8b21ff7.json",
+					"jsonFile" : "target-Automatika_vody-Debug-d11c0c3bbfd0cdafcc01.json",
 					"name" : "Automatika_vody",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "FreeRTOS::@768a070a0fe75716b479",
-					"jsonFile" : "target-FreeRTOS-Debug-139c9e4d2cb1debd9dcf.json",
+					"jsonFile" : "target-FreeRTOS-Debug-8751b19e392a02aaf30d.json",
 					"name" : "FreeRTOS",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_Drivers::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_Drivers-Debug-2dafada133c5cca72034.json",
+					"jsonFile" : "target-STM32_Drivers-Debug-e4f5f9fc133b7da09d4a.json",
 					"name" : "STM32_Drivers",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "SubGHz_Phy::@768a070a0fe75716b479",
-					"jsonFile" : "target-SubGHz_Phy-Debug-a20253c3e657ca5cfcd0.json",
+					"jsonFile" : "target-SubGHz_Phy-Debug-c3d9679a978d6c953070.json",
 					"name" : "SubGHz_Phy",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "Utilities::@768a070a0fe75716b479",
-					"jsonFile" : "target-Utilities-Debug-b0138f7bd2b634c0207e.json",
+					"jsonFile" : "target-Utilities-Debug-334abce7fe69657316bf.json",
 					"name" : "Utilities",
 					"projectIndex" : 0
 				}

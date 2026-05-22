@@ -10,7 +10,7 @@ set(MX_Defines_Syms
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-set(FREERTOS_DIR "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS")
+set(FREERTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Third_Party/FreeRTOS)
 
 # STM32CubeMX generated inclde paths
 set(MX_Include_Dirs

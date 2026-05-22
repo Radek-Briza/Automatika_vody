@@ -19,7 +19,6 @@
 
             "runToEntryPoint": "main",
 
-            "preLaunchTask": "build"
         }
     ]
 }

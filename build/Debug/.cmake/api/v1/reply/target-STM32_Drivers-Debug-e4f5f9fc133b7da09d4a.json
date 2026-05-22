@@ -145,7 +145,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -251,12 +251,12 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/include"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/include"
 				},
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
 				}
 			],
 			"language" : "C",

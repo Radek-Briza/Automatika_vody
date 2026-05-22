@@ -8,7 +8,7 @@
 #ifndef RADIOPARAMS_HPP_
 #define RADIOPARAMS_HPP_
 
-#include "main.h"
+#include "main.h"  // IWYU pragma: keep.
 
 const uint32_t CHANNEL  = 865000000; // 865 MHz
 const uint8_t TX_POWER	= 5;

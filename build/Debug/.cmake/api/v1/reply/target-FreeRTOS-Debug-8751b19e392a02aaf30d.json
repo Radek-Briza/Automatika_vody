@@ -2,19 +2,28 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/lr_fhss_mac.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/tasks.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/queue.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_driver.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/list.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_fw.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/timers.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/wl_lr_fhss.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/event_groups.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/stream_buffer.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3/port.c.obj"
+		},
+		{
+			"path" : "cmake/stm32cubemx/CMakeFiles/FreeRTOS.dir/./__/__/Middlewares/Third_Party/FreeRTOS/portable/MemMang/heap_4.c.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -38,19 +47,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 161,
+				"line" : 156,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 163,
+				"line" : 158,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 162,
+				"line" : 157,
 				"parent" : 0
 			}
 		]
@@ -73,7 +82,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -179,12 +188,12 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/include"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/include"
 				},
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
 				}
 			],
 			"language" : "C",
@@ -202,11 +211,14 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5,
+				6,
+				7
 			]
 		}
 	],
-	"id" : "SubGHz_Phy::@768a070a0fe75716b479",
+	"id" : "FreeRTOS::@768a070a0fe75716b479",
 	"interfaceCompileDependencies" : 
 	[
 		{
@@ -228,7 +240,7 @@
 			"id" : "stm32cubemx::@768a070a0fe75716b479"
 		}
 	],
-	"name" : "SubGHz_Phy",
+	"name" : "FreeRTOS",
 	"paths" : 
 	{
 		"build" : "cmake/stm32cubemx",
@@ -244,7 +256,10 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5,
+				6,
+				7
 			]
 		}
 	],
@@ -253,31 +268,49 @@
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/lr_fhss_mac.c",
+			"path" : "Middlewares/Third_Party/FreeRTOS/tasks.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio.c",
+			"path" : "Middlewares/Third_Party/FreeRTOS/queue.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_driver.c",
+			"path" : "Middlewares/Third_Party/FreeRTOS/list.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_fw.c",
+			"path" : "Middlewares/Third_Party/FreeRTOS/timers.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/wl_lr_fhss.c",
+			"path" : "Middlewares/Third_Party/FreeRTOS/event_groups.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "Middlewares/Third_Party/FreeRTOS/stream_buffer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3/port.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "Middlewares/Third_Party/FreeRTOS/portable/MemMang/heap_4.c",
 			"sourceGroupIndex" : 0
 		}
 	],

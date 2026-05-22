@@ -101,7 +101,6 @@ extern "C" void OnTxTimeout(void){
 		return; // pokud jsme v master modu, neprovádíme CAD
 	}
 	DataTransmit::RadioDriver->Standby( );
-	DataTransmit::RadioDriver->SetChannel(CHANNEL);
 	DataTransmit::RadioDriver->StartCad( );
 	printf("TX Timeout, restarting CAD\n");
 }
@@ -122,7 +121,6 @@ extern "C" void OnRxTimeout(void){
 		return; // pokud jsme v master modu, neprovádíme CAD
 	}
 	DataTransmit::RadioDriver->Standby( );
-	DataTransmit::RadioDriver->SetChannel(CHANNEL);
 	DataTransmit::RadioDriver->StartCad( );
 	printf("RX Timeout, restarting CAD\n");
 }
@@ -136,7 +134,6 @@ extern "C" void OnRxError(void){
 		return; // pokud jsme v master modu, neprovádíme CAD
 	}
 	DataTransmit::RadioDriver->Standby( );
-	DataTransmit::RadioDriver->SetChannel(CHANNEL);
 	DataTransmit::RadioDriver->StartCad( );
 	printf("RX Error, restarting CAD\n");
 }
@@ -201,7 +198,6 @@ bool DataTransmit::SendRquest(Packet::PacketType Type){
 	RequestSent = true;
 	SlaveNotResponding = false;
 	RadioDriver->Standby( );
-	RadioDriver->SetChannel(CHANNEL);
 	RadioDriver->Send(packet.Packet_output.data(), packet.Packet_output.size());
 	return true;
 }

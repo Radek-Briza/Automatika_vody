@@ -21,19 +21,22 @@
 #include "adc.h"
 #include "crc.h"
 #include "dma.h"
-#include "app_subghz_phy.h"
 #include "tim.h"
-#include "wwdg.h"
+//#include "wwdg.h"
 #include "gpio.h"
+
+
+#include "App.hpp"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "sys_app.h"
+#include "App.hpp"
 extern "C"
 {
 #include "FreeRTOS.h"
 #include "task.h"
 }
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-#include "sys_app.h"
-#include "App.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,11 +59,9 @@ extern "C"
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
-
+[[maybe_unused]] 
 void GreenLedTask(void* argument)
-{
-    (void)argument;
-
+{ 
     while (true)
     {
        BSP_LED_Toggle(LED_BLUE);
@@ -68,9 +69,9 @@ void GreenLedTask(void* argument)
     }
 }
 
+[[maybe_unused]] 
 void RedLedTask(void* argument)
 {
-    (void)argument;
 
     while (true)
     {
@@ -79,7 +80,7 @@ void RedLedTask(void* argument)
     }
 }
 
-extern "C" void vApplicationMallocFailedHook(void)
+extern "C" void vApplicationMallocFailedHook(void) 
 {
     printf("Malloc failed\r\n");
   for (;;)
@@ -148,7 +149,7 @@ extern "C" int main(void)
   MX_CRC_Init();
   MX_ADC_Init(); 
   /* USER CODE BEGIN 2 */
-[[maybe_unused]] App Application;
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -177,6 +178,28 @@ extern "C" int main(void)
 
   printf("\rAutomatika vody ver 1.00 \r\n") ;
    
+ /* create tasks */
+ auto requestSendTaskHandler = xTaskCreate(
+        RequestSendTask, 
+        "RequestSend",
+        256,
+        nullptr,
+        2,
+        nullptr);
+
+    configASSERT(requestSendTaskHandler == pdPASS);
+
+ auto ResponseHandlerTaskHandler = xTaskCreate(
+        ResponseHandlerTask, 
+        "ResponseHandler",
+        512,
+        nullptr,
+        2,
+        nullptr);
+
+    configASSERT(ResponseHandlerTaskHandler == pdPASS);
+
+  /*
    BaseType_t ok1 = xTaskCreate(
         GreenLedTask,
         "Green",
@@ -196,13 +219,10 @@ extern "C" int main(void)
     configASSERT(ok1 == pdPASS);
     configASSERT(ok2 == pdPASS);
 
-     vTaskStartScheduler(); 
+    */
+  
+  vTaskStartScheduler(); 
 
- //  Application.init();
-  // Application.loop();
-
-  /* Start scheduler */
-  //´´osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 

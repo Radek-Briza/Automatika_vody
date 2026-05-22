@@ -2,25 +2,19 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/trace/adv_trace/stm32_adv_trace.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/lr_fhss_mac.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_mem.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_systime.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_driver.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_tiny_sscanf.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_fw.c.obj"
 		},
 		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/misc/stm32_tiny_vsnprintf.c.obj"
-		},
-		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/timer/stm32_timer.c.obj"
-		},
-		{
-			"path" : "cmake/stm32cubemx/CMakeFiles/Utilities.dir/./__/__/Utilities/lpm/tiny_lpm/stm32_lpm.c.obj"
+			"path" : "cmake/stm32cubemx/CMakeFiles/SubGHz_Phy.dir/./__/__/Middlewares/Third_Party/SubGHz_Phy/radio_driver/wl_lr_fhss.c.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -44,19 +38,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 151,
+				"line" : 161,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 153,
+				"line" : 163,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 152,
+				"line" : 162,
 				"parent" : 0
 			}
 		]
@@ -79,7 +73,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -185,12 +179,12 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/include"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/include"
 				},
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "D:/Automatiky vody/Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
+					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/portable/GCC/ARM_CM3"
 				}
 			],
 			"language" : "C",
@@ -208,13 +202,11 @@
 				1,
 				2,
 				3,
-				4,
-				5,
-				6
+				4
 			]
 		}
 	],
-	"id" : "Utilities::@768a070a0fe75716b479",
+	"id" : "SubGHz_Phy::@768a070a0fe75716b479",
 	"interfaceCompileDependencies" : 
 	[
 		{
@@ -236,7 +228,7 @@
 			"id" : "stm32cubemx::@768a070a0fe75716b479"
 		}
 	],
-	"name" : "Utilities",
+	"name" : "SubGHz_Phy",
 	"paths" : 
 	{
 		"build" : "cmake/stm32cubemx",
@@ -252,9 +244,7 @@
 				1,
 				2,
 				3,
-				4,
-				5,
-				6
+				4
 			]
 		}
 	],
@@ -263,43 +253,31 @@
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Utilities/trace/adv_trace/stm32_adv_trace.c",
+			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/lr_fhss_mac.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Utilities/misc/stm32_mem.c",
+			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Utilities/misc/stm32_systime.c",
+			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_driver.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Utilities/misc/stm32_tiny_sscanf.c",
+			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/radio_fw.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 3,
 			"compileGroupIndex" : 0,
-			"path" : "Utilities/misc/stm32_tiny_vsnprintf.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 3,
-			"compileGroupIndex" : 0,
-			"path" : "Utilities/timer/stm32_timer.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 3,
-			"compileGroupIndex" : 0,
-			"path" : "Utilities/lpm/tiny_lpm/stm32_lpm.c",
+			"path" : "Middlewares/Third_Party/SubGHz_Phy/radio_driver/wl_lr_fhss.c",
 			"sourceGroupIndex" : 0
 		}
 	],

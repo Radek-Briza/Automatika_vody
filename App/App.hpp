@@ -8,10 +8,12 @@
 #ifndef APP_HPP_
 #define APP_HPP_
 
+#include "main.h" // IWYU pragma: keep.
 #include <cstdint>
 #include <vector>
 #include <type_traits>
-#include <stdexcept>
+#include "stdlib.h"
+
 
 /* Payload parsing functions */
 template<typename T>
@@ -44,14 +46,9 @@ inline uint32_t parse_le(const std::vector<uint8_t>& data, std::size_t index)
 }
 
 
-class App {
-public:
-    void init();
-    void loop();
-
-   
-};
-
-
+extern "C" {
+    void RequestSendTask(void* argument);
+    void ResponseHandlerTask(void* argument);
+}
 
 #endif /* APP_HPP_ */

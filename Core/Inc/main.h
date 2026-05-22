@@ -27,10 +27,10 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32wlxx_hal.h"
+#include "stm32wlxx_hal.h"  // IWYU pragma: keep.
 
-#include "stm32wlxx_nucleo.h"
-#include <stdio.h>
+#include "stm32wlxx_nucleo.h"// IWYU pragma: keep.
+#include <stdio.h> // IWYU pragma: keep.
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
