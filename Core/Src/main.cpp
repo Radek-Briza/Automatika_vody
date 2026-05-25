@@ -22,7 +22,6 @@
 #include "crc.h"
 #include "dma.h"
 #include "tim.h"
-//#include "wwdg.h"
 #include "gpio.h"
 
 
@@ -36,6 +35,7 @@
 #include "App.hpp"
 #include "PumpControl.hpp"
 #include "DisplayModule.hpp"
+#include "WdtSystemTask.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -130,7 +130,6 @@ extern "C" int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  //MX_WWDG_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_CRC_Init();
@@ -191,6 +190,17 @@ extern "C" int main(void)
       nullptr);
   
     configASSERT(Create4 == pdPASS);
+
+    /* register wdt task*/
+    auto Create5 =  xTaskCreate(
+      WdtSupervisorTask,
+      "WDT task",
+      256,
+      nullptr,
+      2,
+      nullptr);
+  
+    configASSERT(Create5 == pdPASS);
   
   InitApplication();
 

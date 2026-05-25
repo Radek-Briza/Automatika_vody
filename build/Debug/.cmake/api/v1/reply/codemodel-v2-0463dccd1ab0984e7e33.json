@@ -86,7 +86,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Automatika_vody::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Automatika_vody-Debug-61994c71da01df4d847f.json",
+					"jsonFile" : "target-Automatika_vody-Debug-1bf5b618eb5b6988be6b.json",
 					"name" : "Automatika_vody",
 					"projectIndex" : 0
 				},
@@ -107,7 +107,7 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "STM32_Drivers::@768a070a0fe75716b479",
-					"jsonFile" : "target-STM32_Drivers-Debug-2f54f2434b1e369a642d.json",
+					"jsonFile" : "target-STM32_Drivers-Debug-88b42e23c20cf5334240.json",
 					"name" : "STM32_Drivers",
 					"projectIndex" : 0
 				},

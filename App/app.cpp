@@ -11,6 +11,7 @@
 #include "stdio.h"
 #include  "DataTransmit.hpp"
 #include "Message.hpp"
+#include "WdtSystemTask.hpp"
 
 	
  QueueHandle_t QueuePumpControl = nullptr;
@@ -98,5 +99,7 @@ void ResponseHandlerTask(void* argument){
 			vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_RED);
 		}
+
+		 gAliveMask.fetch_or(TASK_APP_BIT);
 	}
 }
