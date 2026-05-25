@@ -19,7 +19,7 @@ extern IWDG_HandleTypeDef hiwdg;
 void WdtSupervisorTask(void*)
 {
 
-MX_IWDG_Init();
+//MX_IWDG_Init();
 
     while (1)
     {
@@ -30,7 +30,7 @@ MX_IWDG_Init();
         if (snapshot == EXPECTED_MASK)
         {
             printf("WDT OK\r\n");
-            HAL_IWDG_Refresh( &hiwdg);
+         //   HAL_IWDG_Refresh( &hiwdg);
 
         }
         else
