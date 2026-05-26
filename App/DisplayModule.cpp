@@ -5,14 +5,9 @@
 
 [[maybe_unused]] 
 void DisplayTask(void* argument){ 
-
-     BaseType_t ok;
-     Message msg;
-     while (true){
-     {
-        /* code */
-     }
-     
+    BaseType_t ok;
+    Message msg;
+     while (true){  
      ok= xQueueReceive(
                 QueueDisplay,
                 &msg,
@@ -28,9 +23,8 @@ void DisplayTask(void* argument){
             /* pump error  */
             if(msg.MsgType == MsgDataType::PumpError ){        
 			    printf("!!! CHYBA CERPADLA !!!!\n");
+            
             }
-
-
         }
-    }
-}
+    }   
+}  

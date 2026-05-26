@@ -46,7 +46,6 @@ uint16_t calculate_crc(std::span<uint8_t> data,uint16_t initial_value = 0xFFFFu)
 auto Packet::SegmentPacketToSpans(std::array<uint8_t,Packet::max_packet_size>& buffer){
     std::span ProtocolID = std::span{buffer}.first(Packet::packet_id_size); // Protocol ID is 2 bytes
     std::span Packet_ID = std::span{buffer}.subspan(Packet::packet_id_size,  Packet::packet_id_size); // Packet ID is 2 bytes
-   
     std::span data_length = std::span{buffer}.subspan((Packet::packet_id_size*2), Packet::data_length_size); // Data Length is 2 bytes
     std::span CRC_data = std::span{buffer}.subspan((Packet::packet_id_size*2)+Packet::data_length_size, Packet::crc_size); // CRC is 2 bytes (CRC16)
     std::span Payload = std::span{buffer}.subspan(Packet::header_size); // The rest is payload
@@ -55,7 +54,6 @@ auto Packet::SegmentPacketToSpans(std::array<uint8_t,Packet::max_packet_size>& b
 
 /* create packet without payload*/
 bool Packet::CreatePacket(PacketType Type ){
-    
    std::vector<uint8_t> empty_payload={}; // Empty payload
    Packet_output.clear(); // Clear output buffer before creating new packet
    auto [ProtocolID, Packet_ID, data_length, CRC_data, Payload] = Packet::SegmentPacketToSpans(PacketData);
@@ -71,8 +69,7 @@ bool Packet::CreatePacket(PacketType Type ){
    printf("Calculated CRC: 0x%04X\n", crc); // Print calculated CRC for debugging
    std::ranges::copy(GetAsByteArray(crc), CRC_data.begin());
    std::ranges::copy_n(PacketData.data(), Packet::header_size, std::back_inserter(Packet_output)); // Copy header to output vector
-  
-    printf("packet size: %d\n", static_cast<unsigned int>(Packet_output.size()));
+   printf("packet size: %d\n", static_cast<unsigned int>(Packet_output.size()));
    return true; // Packet created successfully
 }
 
@@ -85,13 +82,11 @@ bool Packet::CreatePacket(PacketType Type ){
     }
     Packet_output.clear(); // Clear output buffer before creating new packet
    auto [ProtocolID, Packet_ID, data_length, CRC_data, Payload] = Packet::SegmentPacketToSpans(PacketData);
-  
    std::ranges::copy(GetAsByteArray(Protocol_ID), ProtocolID.begin()); // Copy Protocol ID to packet
    std::ranges::copy(GetAsByteArray(Type), Packet_ID.begin()); // Copy Packet ID to packet 
    std::ranges::copy(Payload_input, Payload.begin()); // Copy Payload to packet  
    uint16_t payload_size = static_cast<uint16_t>(Payload_input.size());
    std::ranges::copy(GetAsByteArray(payload_size), data_length.begin()); // Copy Data Length to packet
-   
    auto Header = std::span{PacketData}.first(Packet::header_size-Packet::crc_size); // - crc area
    uint16_t crc = calculate_crc(Header); // Calculate CRC over header and payload
    crc = calculate_crc(Payload, crc); // Calculate CRC over header and payload
@@ -121,7 +116,6 @@ bool Packet::CreatePacket(PacketType Type ){
     printf("Packet type: %u\n", m_paket_ID);
     printf("Data Length: %u\n", m_data_length);       
     
-
     // verify CRC
     auto Header = std::span{Packet_inp}.first(Packet::header_size-Packet::crc_size); // - crc area
     uint16_t calculated_crc = calculate_crc(Header); // Calculate CRC over header and payload

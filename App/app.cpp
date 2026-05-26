@@ -13,6 +13,8 @@
 #include "Message.hpp"
 #include "WdtSystemTask.hpp"
 #include "Common.hpp"
+#include "PumpControl.hpp"
+
 
 	
  QueueHandle_t QueuePumpControl = nullptr;
@@ -31,6 +33,41 @@ void InitApplication(void){
 	printf("Init device data  transmit\r");
 }
 
+/* pump control task */
+[[maybe_unused]] 
+void PumpControlTask(void* argument){ 
+	while (1){
+		PumpControler::GetInstance().ControlPump();
+		gAliveMask.fetch_or(TASK_PUMP_BIT);  
+	}
+}
+
+void InitPumpSystem(void){
+  	auto ErrLed = [](bool on) { 
+		if(on){BSP_LED_On(LED_RED);}
+			else {BSP_LED_Off(LED_RED);}
+	};
+	auto RunLed = [](bool on) { 
+		if(on){BSP_LED_On(LED_GREEN);}
+			else {BSP_LED_Off(LED_GREEN);}
+	};
+	auto RunPin = [](bool on) { 
+		if(on){BSP_LED_On(LED_BLUE);}
+			else {BSP_LED_Off(LED_BLUE);}
+	};
+	PumpControler::GetInstance().Init(QueuePumpControl,ErrLed,RunLed,RunPin) ;
+	
+	auto ok =  xTaskCreate(
+        PumpControlTask,
+        "Pump control",
+        256,
+        nullptr,
+        2,
+        nullptr);
+    
+      configASSERT(ok == pdPASS);
+	  
+} 
 
 /* transmit request task */
 [[maybe_unused]] 
@@ -105,3 +142,4 @@ void ResponseHandlerTask(void* argument){
 		gAliveMask.fetch_or(TASK_APP_BIT);
 	}
 }
+

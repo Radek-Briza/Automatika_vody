@@ -49,6 +49,7 @@ extern "C" {
     void RequestSendTask(void* argument);
     void ResponseHandlerTask(void* argument);
     void InitApplication(void);
+    void InitPumpSystem(void);
 }
 
 #endif /* APP_HPP_ */

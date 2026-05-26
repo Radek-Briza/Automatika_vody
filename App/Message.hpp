@@ -1,4 +1,7 @@
 
+#ifndef MESSAGE_HPP_
+#define  MESSAGE_HPP_
+
 #include <cstdint>
 #include "queue.h"
 
@@ -25,3 +28,5 @@ struct Message
  extern QueueHandle_t QueuePumpControl;
  extern QueueHandle_t QueueDisplay;
  extern QueueHandle_t QueueLog;
+
+ #endif

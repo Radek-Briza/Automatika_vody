@@ -12,7 +12,6 @@ public:
     Packet();
     ~Packet();
 
-    
     public:
     enum PacketType
         {

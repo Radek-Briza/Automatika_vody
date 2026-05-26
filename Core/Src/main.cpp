@@ -161,7 +161,7 @@ extern "C" int main(void)
 
   printf("\r\nAutomatika vody ver 1.00 \r\n") ;
    
- /* create tasks */
+ /* create task for periodic req send */
  auto  Create1 = xTaskCreate(
         RequestSendTask, 
         "RequestSend",
@@ -169,9 +169,9 @@ extern "C" int main(void)
         nullptr,
         2,
         nullptr);
-
     configASSERT(Create1 == pdPASS);
 
+   /* create task for receive data answer  */ 
  auto Create2 = xTaskCreate(
         ResponseHandlerTask, 
         "Response Handler",
@@ -179,7 +179,6 @@ extern "C" int main(void)
         nullptr,
         2,
         nullptr);
-
     configASSERT(Create2 == pdPASS);
   
     auto Create3 =  xTaskCreate(
@@ -207,7 +206,6 @@ extern "C" int main(void)
   InitPumpSystem() ; 
 
   vTaskStartScheduler(); 
-
 
   /* We should never get here as control is now taken by the scheduler */
 
