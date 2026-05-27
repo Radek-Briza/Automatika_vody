@@ -1,6 +1,3 @@
-
-
-
 #include "FreeRTOS.h" // IWYU pragma: keep.
 #include "task.h"
 #include "semphr.h"

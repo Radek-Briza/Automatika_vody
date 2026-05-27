@@ -30,6 +30,27 @@ void InitApplication(void){
 	configASSERT(QueueDisplay != nullptr);
 	 QueueLog =  xQueueCreate(QueueLength, sizeof(Message));
 	configASSERT(QueueLog != nullptr);
+	
+	/* create task for periodic req send */
+ 	auto  Create1 = xTaskCreate(
+        RequestSendTask, 
+        "RequestSend",
+        256,
+        nullptr,
+        2,
+        nullptr);
+    configASSERT(Create1 == pdPASS);
+
+   /* create task for receive data answer  */ 
+ 	auto Create2 = xTaskCreate(
+        ResponseHandlerTask, 
+        "Response Handler",
+        512,
+        nullptr,
+        2,
+        nullptr);
+    configASSERT(Create2 == pdPASS);
+
 	#if APP_DEBUG_PRINT
 	printf("Init device data  transmit\r"); 
 	#endif
@@ -43,6 +64,7 @@ void PumpControlTask(void* argument){
 		gAliveMask.fetch_or(TASK_PUMP_BIT);  
 	}
 }
+
 
 void InitPumpSystem(void){
   	auto ErrLed = [](bool on) { 
