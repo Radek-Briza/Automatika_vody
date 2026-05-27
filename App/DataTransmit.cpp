@@ -13,7 +13,7 @@
 #include "Common.hpp"
 
 
- uint16_t DataTransmit::timeout = 0;
+uint16_t DataTransmit::timeout = 0;
 bool DataTransmit::MasterMode = false;
 bool DataTransmit::RequestSent = false;
 bool DataTransmit::DataAvailable = false;
@@ -199,7 +199,6 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
  	
 	/* CAD sampler timer setup */
 	if(MasterMode == false){
-
 		CadTimer = xTimerCreate(
         "Cad sampler",
         pdMS_TO_TICKS(CAD_sample ),

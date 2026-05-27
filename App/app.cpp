@@ -130,44 +130,32 @@ void ResponseHandlerTask(void* argument){
             	&msgDisplay ,
             	pdMS_TO_TICKS(300)
         		);
-		
-			configASSERT(ok  == pdPASS) ;
-			
-			/* pump control  */
-			msgPumpControl.MsgType = MsgDataType::LevelStatusData;
-			msgPumpControl.Data = level_status;
-			ok = xQueueSend(
-            	QueuePumpControl,
-            	&msgPumpControl ,
-            	pdMS_TO_TICKS(300)
-        	);
-			configASSERT(ok  == pdPASS) ;
+				configASSERT(ok  == pdPASS) ;
 				
+				/* pump control  */
+				msgPumpControl.MsgType = MsgDataType::LevelStatusData;
+				msgPumpControl.Data = level_status;
+				ok = xQueueSend(
+					QueuePumpControl,
+					&msgPumpControl ,
+					pdMS_TO_TICKS(300)
+				);
+				configASSERT(ok  == pdPASS) ;		
 			}
 			BSP_LED_Toggle(LED_GREEN);
 			vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_GREEN);
+			BSP_LED_Off(LED_RED);
 
-		}
-		else if(DataTransmit::GetInstance().DataOverload){
-			#if APP_DEBUG_PRINT
-			printf("Data overload! New data received before processing previous data.\n");
-			#endif
-			DataTransmit::GetInstance().DataOverload = false; // Reset flag after handling overload
-			BSP_LED_Toggle(LED_RED);
-			 vTaskDelay(pdMS_TO_TICKS(100));
-			BSP_LED_Toggle(LED_RED);
-		}
+		} /* communication error */
 		else if(DataTransmit::GetInstance().SlaveNotResponding){
 			#if APP_DEBUG_PRINT
 			printf("Slave not responding! No response received within timeout period.\n");
 			#endif
 			DataTransmit::GetInstance().SlaveNotResponding = false; // Reset flag after handling no response
-			BSP_LED_Toggle(LED_RED);
-			vTaskDelay(pdMS_TO_TICKS(100));
-			BSP_LED_Toggle(LED_RED);
-			
-			/* display - sen error state  */
+			BSP_LED_On(LED_RED);
+		
+			/* display - send error state  */
 				msgDisplay.MsgType = MsgDataType::CommunicationError;
 				msgDisplay.Data = 1; 
 				auto ok = xQueueSend(
@@ -180,4 +168,3 @@ void ResponseHandlerTask(void* argument){
 		gAliveMask.fetch_or(TASK_APP_BIT);
 	}
 }
-

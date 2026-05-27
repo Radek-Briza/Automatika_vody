@@ -45,13 +45,9 @@ public:
 	const std::vector<uint8_t>& GetReceivedPayload() const { return packet.Payload_output; }	
 	static bool DataAvailable;
 	static bool DataOverload; 
-	static bool RequestSent;
-	static bool MasterMode;
 	static bool SlaveNotResponding;
-	static uint16_t timeout;
 	static Packet::PacketType ReceivedDataType;
 	
-
 private:
 	DataTransmit() = default;
 	~DataTransmit() = default;
@@ -70,6 +66,9 @@ private:
 	static TimerHandle_t RxTimeoutTimer;
 	static Packet packet;
     static Packet::PacketType DataType; // Proměnná pro uložení typu dat z příchozího packetu
+	static bool MasterMode;
+	static bool RequestSent;
+	static uint16_t timeout;
 	
 	friend void RadioCadTimeoutIrq(void *context);
 	friend void OnCadDone(bool channelActivityDetected);

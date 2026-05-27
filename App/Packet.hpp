@@ -14,7 +14,6 @@ class Packet
         Packet()=default;
         ~Packet()=default;
 
-    
     enum PacketType{
             Type_undefined = 0x00,
             Level_request = 0x01,
