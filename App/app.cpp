@@ -30,7 +30,9 @@ void InitApplication(void){
 	configASSERT(QueueDisplay != nullptr);
 	 QueueLog =  xQueueCreate(QueueLength, sizeof(Message));
 	configASSERT(QueueLog != nullptr);
-	printf("Init device data  transmit\r");
+	#if APP_DEBUG_PRINT
+	printf("Init device data  transmit\r"); 
+	#endif
 }
 
 /* pump control task */
@@ -53,7 +55,7 @@ void InitPumpSystem(void){
 	};
 	auto RunPin = [](bool on) { 
 		if(on){BSP_LED_On(LED_BLUE);}
-			else {BSP_LED_Off(LED_BLUE);}
+			else {BSP_LED_Off(LED_BLUE);} 
 	};
 	PumpControler::GetInstance().Init(QueuePumpControl,ErrLed,RunLed,RunPin) ;
 	
@@ -65,8 +67,7 @@ void InitPumpSystem(void){
         2,
         nullptr);
     
-      configASSERT(ok == pdPASS);
-	  
+      configASSERT(ok == pdPASS);	  
 } 
 
 /* transmit request task */
@@ -90,21 +91,23 @@ void ResponseHandlerTask(void* argument){
     while (true){
        /* wait for response */
 		if(DataTransmit::GetInstance().DataAvailable){
+			#if APP_DEBUG_PRINT
 			printf("Data received successfully, type: %d\n", DataTransmit::GetInstance().GetReceivedDataType());
+			#endif
 			DataTransmit::GetInstance().DataAvailable = false; // Reset flag after processing
 			if(DataTransmit::GetInstance().GetReceivedDataType()==Packet::Level_response){
-				uint16_t level_value = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);  
-				uint16_t  level_status = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 1);  
-				BaseType_t ok;
-
+				uint32_t level_value = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);
+				uint32_t  level_status = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 1); 
+				configASSERT( level_value not_eq 0xFFFFFFFF or level_status not_eq 0xFFFFFFFF);  
+			
 				/* display */
 				msgDisplay.MsgType = MsgDataType::LevelData;
 				msgDisplay.Data = level_value; 
-				ok = xQueueSend(
+				auto ok = xQueueSend(
             	QueueDisplay,
             	&msgDisplay ,
             	pdMS_TO_TICKS(300)
-        	);
+        		);
 		
 			configASSERT(ok  == pdPASS) ;
 			
@@ -120,25 +123,38 @@ void ResponseHandlerTask(void* argument){
 				
 			}
 			BSP_LED_Toggle(LED_GREEN);
-			 vTaskDelay(pdMS_TO_TICKS(100));
+			vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_GREEN);
 
 		}
 		else if(DataTransmit::GetInstance().DataOverload){
+			#if APP_DEBUG_PRINT
 			printf("Data overload! New data received before processing previous data.\n");
+			#endif
 			DataTransmit::GetInstance().DataOverload = false; // Reset flag after handling overload
 			BSP_LED_Toggle(LED_RED);
 			 vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_RED);
 		}
 		else if(DataTransmit::GetInstance().SlaveNotResponding){
+			#if APP_DEBUG_PRINT
 			printf("Slave not responding! No response received within timeout period.\n");
+			#endif
 			DataTransmit::GetInstance().SlaveNotResponding = false; // Reset flag after handling no response
 			BSP_LED_Toggle(LED_RED);
 			vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_RED);
+			
+			/* display - sen error state  */
+				msgDisplay.MsgType = MsgDataType::CommunicationError;
+				msgDisplay.Data = 1; 
+				auto ok = xQueueSend(
+            	QueueDisplay,
+            	&msgDisplay ,
+            	pdMS_TO_TICKS(300)
+        		);
+				configASSERT(ok  == pdPASS) ;
 		}
-
 		gAliveMask.fetch_or(TASK_APP_BIT);
 	}
 }

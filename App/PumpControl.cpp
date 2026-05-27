@@ -2,6 +2,7 @@
 #include "PumpControl.hpp"
 #include "Main.h" // IWYU pragma: keep.
 #include <cstdio>
+#include "Common.hpp"
 
 std::function<void(bool)> PumpControler::ErrorLedControl=nullptr;
 std::function<void(bool)> PumpControler::RunLedControl=nullptr;
@@ -10,14 +11,13 @@ bool PumpControler::PumpRun=false ;
 bool PumpControler::ErrorCondition=false ;
 TimerHandle_t PumpControler::PumpRunTimer=nullptr; 
 QueueHandle_t PumpControler::QueuePumpControl=nullptr;
-Message PumpControler::msgDisplay;
+Message PumpControler::msgDisplay={};
 //MessageButton PumpControler::BtnMsg;
 
 
 
 [[maybe_unused]] 
-void PumpOvertimerCallback(TimerHandle_t xTimer)
-{
+void PumpOvertimerCallback(TimerHandle_t xTimer){
     configASSERT(PumpControler::RunLedControl   != nullptr) ;
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
     configASSERT(PumpControler::ErrorLedControl != nullptr) ;
@@ -28,13 +28,13 @@ void PumpOvertimerCallback(TimerHandle_t xTimer)
         PumpControler::RunLedControl(false);
         PumpControler::PumpControlPin(false);
         PumpControler::ErrorLedControl(true);
-
-        //BSP_LED_On(LED_RED); 
+        #if APP_DEBUG_PRINT
         printf("Pump overtime - OFF\r\n");
+        #endif
        
         /* error status for  display */
-         PumpControler::msgDisplay.MsgType = MsgDataType::PumpError;
-         PumpControler::msgDisplay.Data = 1;  // persist 
+        PumpControler::msgDisplay.MsgType = MsgDataType::PumpError;
+        PumpControler::msgDisplay.Data = 1;  // persist 
         auto ok = xQueueSend(
         QueueDisplay,
         & PumpControler::msgDisplay ,
@@ -69,7 +69,9 @@ void PumpControler::ControlPump(){
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
     configASSERT(PumpControler::ErrorLedControl != nullptr) ;
     configASSERT(gButtonQueue != nullptr);
+    DisplayMessageType NewMessage = DisplayMessageType::NoMessage;
 
+    /* get message  from radio module */
     Message StatusMsg;
     auto ok= xQueueReceive(
                 QueuePumpControl,
@@ -81,7 +83,6 @@ void PumpControler::ControlPump(){
     if(ok == pdPASS){
         if(StatusMsg.MsgType == MsgDataType::LevelStatusData ){
             if(!ErrorCondition){
-
                 switch (StatusMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
                     
                     /* under max and middle - hysteresis */
@@ -97,8 +98,10 @@ void PumpControler::ControlPump(){
                         // gpio pump on 
                         PumpControlPin(true);
                         RunLedControl(true);
-                    
+                        NewMessage = DisplayMessageType::PumpRun;
+                        #if APP_DEBUG_PRINT
                         printf("Pump ON(1)\r\n");
+                        #endif
                     }
                     break;
                 /* drop level  */
@@ -109,7 +112,10 @@ void PumpControler::ControlPump(){
                     configASSERT(Ok == pdPASS);
                     RunLedControl(true);
                     PumpControlPin(true);
-                        printf("Pump ON(2)\r\n");
+                     NewMessage = DisplayMessageType::PumpRun;
+                    #if APP_DEBUG_PRINT
+                    printf("Pump ON(2)\r\n");
+                    #endif
                     }
                 
                 break;    
@@ -123,13 +129,30 @@ void PumpControler::ControlPump(){
                         configASSERT(Ok == pdPASS);
                         RunLedControl(false);
                         PumpControlPin(false);
+                         NewMessage = DisplayMessageType::PumpStop;
+                        #if APP_DEBUG_PRINT
                         printf("Pump OFF\r\n");
+                        #endif
                     }          
                 }
             }
         }
      }   
     
+    /* send message to display if a some change */
+    if( NewMessage != DisplayMessageType::NoMessage){
+        PumpControler::msgDisplay.MsgType = MsgDataType::PumpStatus;
+        PumpControler::msgDisplay.Data = (NewMessage == DisplayMessageType::PumpRun) ? 1 : 0;
+        auto ok = xQueueSend(
+        QueueDisplay,
+        & PumpControler::msgDisplay ,
+        pdMS_TO_TICKS(300)
+        );
+        configASSERT(ok  == pdPASS) ;
+
+    }
+
+     /* message from button - possible unblock system   */
      MessageButton BtnMsg;
      ok= xQueueReceive(
                 gButtonQueue,
@@ -153,7 +176,9 @@ void PumpControler::ControlPump(){
             );
             configASSERT(ok  == pdPASS) ;
             }
+            #if APP_DEBUG_PRINT
             printf("<<<< Cepadlo odblokovano >>>>\r\n");
+            #endif
         }
 
     }

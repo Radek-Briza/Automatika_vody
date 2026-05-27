@@ -9,9 +9,7 @@
 #include "crc.h"
 #include "stm32wlxx_hal_crc.h"
 #include "stm32wlxx_hal_crc_ex.h"
-
-Packet::Packet() = default;
-Packet::~Packet() = default;
+#include "Common.hpp"
 
 // Helper that returns a byte view over a POD value.
 static auto GetAsByteArray(auto const& data) { return std::span{reinterpret_cast<const uint8_t*>(&data), sizeof(data)}; }
@@ -66,10 +64,14 @@ bool Packet::CreatePacket(PacketType Type ){
    std::ranges::copy(GetAsByteArray(payload_size), data_length.begin()); // Copy Data Length to packet
    auto Header = std::span{PacketData}.first(Packet::header_size-Packet::crc_size); // - crc area
    uint16_t crc = calculate_crc(Header); // Calculate CRC over header 
+   #if RADIO_DEBUG_PRINT 
    printf("Calculated CRC: 0x%04X\n", crc); // Print calculated CRC for debugging
+   #endif
    std::ranges::copy(GetAsByteArray(crc), CRC_data.begin());
    std::ranges::copy_n(PacketData.data(), Packet::header_size, std::back_inserter(Packet_output)); // Copy header to output vector
+   #if RADIO_DEBUG_PRINT
    printf("packet size: %d\n", static_cast<unsigned int>(Packet_output.size()));
+   #endif
    return true; // Packet created successfully
 }
 
@@ -77,7 +79,9 @@ bool Packet::CreatePacket(PacketType Type ){
 /* create packet with given type and payload */
  bool Packet::CreatePacket(PacketType Type, std::vector<uint8_t> &Payload_input){
     if(Payload_input.size() > Packet::max_payload_size || Payload_input.empty())  {
+        #if RADIO_DEBUG_PRINT 
         printf("Payload size error!\n");     
+        #endif
         return false; // Payload too large to fit in packet
     }
     Packet_output.clear(); // Clear output buffer before creating new packet
@@ -90,7 +94,9 @@ bool Packet::CreatePacket(PacketType Type ){
    auto Header = std::span{PacketData}.first(Packet::header_size-Packet::crc_size); // - crc area
    uint16_t crc = calculate_crc(Header); // Calculate CRC over header and payload
    crc = calculate_crc(Payload, crc); // Calculate CRC over header and payload
+   #if RADIO_DEBUG_PRINT 
    printf("Calculated CRC: 0x%04X\n", crc); // Print calculated CRC for debugging
+   #endif
    std::ranges::copy(GetAsByteArray(crc), CRC_data.begin());
    std::ranges::copy_n(PacketData.data(), Packet::header_size+Payload_input.size(), std::back_inserter(Packet_output)); // Copy header to output vector
    return true; // Packet created successfully
@@ -104,7 +110,9 @@ bool Packet::CreatePacket(PacketType Type ){
     // KONVERZE SPANU NA PRIMITIVNI TYPY
     auto Protocol_ID_value = *reinterpret_cast<const uint16_t*>(ProtocolID.data()); // Convert Protocol ID span to uint16_t 
     if(Protocol_ID_value != Protocol_ID){ // Assuming 0xABCD is the expected Protocol ID
+        #if RADIO_DEBUG_PRINT 
         printf("Invalid Protocol ID: 0x%04X\n", Protocol_ID_value);
+        #endif
         return false; // Invalid Protocol ID
     }
     auto m_paket_ID =    *reinterpret_cast<const uint16_t*>(Packet_ID.data()); // Convert data length span to uint16_t
@@ -112,27 +120,34 @@ bool Packet::CreatePacket(PacketType Type ){
     auto m_crc_data =    *reinterpret_cast<const uint16_t*>(CRC_data.data()); // Convert   CRC span to uint16_t    
     std::array<uint8_t, Packet::max_packet_size> m_payload{};
     std::ranges::copy(Payload, m_payload.data());
-    
+    #if RADIO_DEBUG_PRINT 
     printf("Packet type: %u\n", m_paket_ID);
     printf("Data Length: %u\n", m_data_length);       
+    #endif
     
     // verify CRC
     auto Header = std::span{Packet_inp}.first(Packet::header_size-Packet::crc_size); // - crc area
     uint16_t calculated_crc = calculate_crc(Header); // Calculate CRC over header and payload
     calculated_crc = calculate_crc(Payload.first(m_data_length), calculated_crc); // Calculate CRC over header and payload
         if (calculated_crc != m_crc_data) {
+                #if RADIO_DEBUG_PRINT 
                 printf("CRC check failed! Expected: 0x%04X, Calculated: 0x%04X\n", static_cast<unsigned int >(m_crc_data), static_cast<unsigned int>(calculated_crc));
+                #endif
                 return false; // CRC check failed
             }
+            #if RADIO_DEBUG_PRINT 
             printf("CRC check passed!\n");
+            #endif
             Payload_output.clear(); // Clear previous payload before copying new data
             std::ranges::copy(Payload.first(m_data_length), std::back_inserter(Payload_output)); // Copy payload to output vector
 
+            #if RADIO_DEBUG_PRINT 
             printf("Received payload: ");
             for( const auto& byte : Payload_output){
                 printf("%02X ", byte);
             }
             printf("\n");
+            #endif
             Type_out = static_cast<PacketType>(m_paket_ID); // A
     return true; // Packet parsed successfully
 }

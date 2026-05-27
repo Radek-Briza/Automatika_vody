@@ -12,27 +12,25 @@ enum class MsgDataType {
     LevelData,
     LevelStatusData,
     BatteryLevel,
+    PumpStatus,
     PumpError,
     CommunicationError,
     UnknownDataType
 };
 
-struct Message
-{
+struct Message{
     MsgDataType  MsgType=MsgDataType::UnknownDataType;;
     uint32_t MsgCounter=0;
     uint32_t Data=0;
 };
 
-enum class ButtonEventType
-{
+enum class ButtonEventType{
     Press,
     LongPress,
     Release
 };
 
-struct MessageButton
-{
+struct MessageButton{
     uint8_t buttonId;
     ButtonEventType event;
 };

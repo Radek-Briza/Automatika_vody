@@ -26,7 +26,4 @@ const uint8_t PAYLOAD_LEN			= 0;
 const uint16_t SYMB_TIMEOUT		= 10000;  // pocet symbolu
 
 
-
-
-
 #endif /* RADIOPARAMS_HPP_ */

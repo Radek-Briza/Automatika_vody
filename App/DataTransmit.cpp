@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstring>
 #include <cstdio>
+#include "Common.hpp"
 
 
  uint16_t DataTransmit::timeout = 0;
@@ -27,8 +28,7 @@ Packet::PacketType DataTransmit::DataType = Packet::Type_undefined;
 
 
 [[maybe_unused]] 
-void CadTimerCallback(TimerHandle_t xTimer)
-{   
+void CadTimerCallback(TimerHandle_t xTimer){   
    DataTransmit::RadioDriver->Standby( );
    DataTransmit::RadioDriver->SetChannel(CHANNEL);
    DataTransmit::RadioDriver->StartCad( );
@@ -41,7 +41,9 @@ void RadioCadTimeoutIrq( void *context ){
 	}
 	DataTransmit::RadioDriver->Standby( );
 	DataTransmit::RadioDriver->StartCad( );
+	#if RADIO_DEBUG_PRINT 
 	printf("Start CAD\n");
+	#endif
 }
 
 [[maybe_unused]] 
@@ -51,7 +53,9 @@ void RxTimeoutTimerCallback(TimerHandle_t xTimer){
 		if(DataTransmit::RequestSent){
 			DataTransmit::RequestSent = false;
 			DataTransmit::SlaveNotResponding = true;
+			#if RADIO_DEBUG_PRINT 
 			printf("RX Timeout, slave not responding\n");
+			#endif
 		}
 	}	
 }
@@ -62,7 +66,9 @@ extern "C" void OnCadDone( bool channelActivityDetected ){
 		BaseType_t hpw = pdFALSE;
 		auto Ok = xTimerStopFromISR(DataTransmit::CadTimer,&hpw);
 		configASSERT(Ok == pdPASS);
+		#if RADIO_DEBUG_PRINT 
 		printf(">>>>Start RX\n");
+		#endif
 	}else{
 		// Channel is clear, proceed with transmission
 		BaseType_t hpw = pdFALSE;
@@ -78,18 +84,24 @@ extern "C" void OnTxDone(void){
 		BaseType_t hpw = pdFALSE;
 		auto Ok = xTimerStartFromISR(DataTransmit::RxTimeoutTimer,&hpw);
 		configASSERT(Ok == pdPASS);
+		#if RADIO_DEBUG_PRINT 
 		printf("Transmission done, starting RX\n");
+		#endif
 		return; 
 	}
 	DataTransmit::RadioDriver->Standby( );
 	DataTransmit::RadioDriver->StartCad( );
+	#if RADIO_DEBUG_PRINT 
 	printf("Transmission done, restarting CAD\n");
+	#endif
 };
 
 /* Callback functions - Rx complete */
 extern "C" void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskCfo){
 	DataTransmit::RequestSent = false;
+	#if RADIO_DEBUG_PRINT 
 	printf("Received packet: size=%u, rssi=%d, snr=%d\n", size, rssi, LoraSnr_FskCfo);
+	#endif
 	
 	BaseType_t hpw = pdFALSE;
 	auto Ok = xTimerStopFromISR(DataTransmit::RxTimeoutTimer ,&hpw);
@@ -115,7 +127,9 @@ extern "C" void OnTxTimeout(void){
 	}
 	DataTransmit::RadioDriver->Standby( );
 	DataTransmit::RadioDriver->StartCad( );
+	#if RADIO_DEBUG_PRINT 
 	printf("TX Timeout, restarting CAD\n");
+	#endif
 }
 
 extern "C" void OnRxTimeout(void){
@@ -123,7 +137,9 @@ extern "C" void OnRxTimeout(void){
 		if(++DataTransmit::timeout < 4){ // Po 3 neúspěšných pokusech o příjem dat považujeme slave za nereagujícího
 			DataTransmit::RadioDriver->Standby( );
 			DataTransmit::RadioDriver->Rx(DataTransmit::ResponseTimeout);
+			#if RADIO_DEBUG_PRINT 
 			printf("restarting RX\n");
+			#endif
 			return;
 		}
 		DataTransmit::timeout = 0;
@@ -135,7 +151,9 @@ extern "C" void OnRxTimeout(void){
 	}
 	DataTransmit::RadioDriver->Standby( );
 	DataTransmit::RadioDriver->StartCad( );
+	#if RADIO_DEBUG_PRINT 
 	printf("RX Timeout, restarting CAD\n");
+	#endif
 }
 
 extern "C" void OnRxError(void){
@@ -148,7 +166,9 @@ extern "C" void OnRxError(void){
 	}
 	DataTransmit::RadioDriver->Standby( );
 	DataTransmit::RadioDriver->StartCad( );
+	#if RADIO_DEBUG_PRINT 
 	printf("RX Error, restarting CAD\n");
+	#endif
 }
 
 /* init  radio */
@@ -201,7 +221,9 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
 		
 	DataAvailable = false;		
 	DataOverload = false;		
+	#if RADIO_DEBUG_PRINT 
 	printf("DataTransmit initialized\n");
+	#endif
 }
 
 /* send data  request  */
@@ -209,15 +231,19 @@ bool DataTransmit::SendRquest(Packet::PacketType Type){
 	
 	/* create packet */
 	if(!packet.CreatePacket(Type)){
+		#if RADIO_DEBUG_PRINT 
 		printf("Packet creation failed!\n");
+		#endif
 		return false; // Packet creation failed
 	}
 	/* send packet */
+	#if RADIO_DEBUG_PRINT 
 	printf("Raw data sent: ");
 	for(size_t i = 0; i < packet.Packet_output.size(); ++i){
 		printf("%02X ", packet.Packet_output[i]);
 	}
 	printf("\n");
+	#endif
 	
 	RequestSent = true;
 	SlaveNotResponding = false;

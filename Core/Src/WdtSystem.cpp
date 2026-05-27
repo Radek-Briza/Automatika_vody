@@ -1,7 +1,7 @@
 
 
 
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep.
 #include "task.h"
 #include "semphr.h"
 #include <cstdio>
@@ -18,27 +18,16 @@ std::atomic<uint32_t> gAliveMask{0};
 constexpr uint32_t EXPECTED_MASK = TASK_PUMP_BIT | TASK_APP_BIT | TASK_REQ_SENDER_BIT ;
 
 [[maybe_unused]] 
-void WdtSupervisorTask(void*)
-{
-
-MX_IWDG_Init();
+void WdtSupervisorTask(void*){
+    MX_IWDG_Init();
 
     while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
         uint32_t snapshot = gAliveMask.exchange(0);
 
-        if (snapshot == EXPECTED_MASK)
-        {
-            printf("WDT OK\r\n");
+        if (snapshot == EXPECTED_MASK){         
             HAL_IWDG_Refresh( &hiwdg);
-
         }
-        else
-        {
-            printf("WDT FAIL\r\n");
-        }
-
-        gAliveMask = 0;
     }
 }

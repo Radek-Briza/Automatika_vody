@@ -1,7 +1,7 @@
 #ifndef BUTTON_CONTROL_HPP_
 #define BUTTON_CONTROL_HPP_
 
-#include "main.h" 
+#include "main.h"  // IWYU pragma: keep.
 #include "FreeRTOS.h" // IWYU pragma: keep.
 #include "Message.hpp" // IWYU pragma: keep.
 
@@ -12,8 +12,7 @@ constexpr TickType_t DEBOUNCE_RELEASE_MS  = 100;
 constexpr TickType_t LONG_PRESS_MS        = 1500;
 
 
-enum class ButtonState
-{
+enum class ButtonState{
     Idle,
     DebouncePress,
     Pressed,
@@ -21,8 +20,7 @@ enum class ButtonState
     DebounceRelease
 };
 
-struct ButtonContext
-{
+struct ButtonContext{
     GPIO_TypeDef* port;
     uint16_t pin;
     ButtonState state = ButtonState::Idle;

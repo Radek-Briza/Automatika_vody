@@ -5,10 +5,11 @@
 
 [[maybe_unused]] 
 void DisplayTask(void* argument){ 
-    BaseType_t ok;
+   bool CommunicationError =false;
     Message msg;
-     while (true){  
-     ok= xQueueReceive(
+    
+    while (true){  
+        auto ok= xQueueReceive(
                 QueueDisplay,
                 &msg,
                 portMAX_DELAY
@@ -16,16 +17,36 @@ void DisplayTask(void* argument){
 
             /* new message */
         if(ok == pdPASS){
-            /* level */
+            /* level + restore communication */
             if(msg.MsgType == MsgDataType::LevelData ){        
-			    printf("Actual level value: %u cm\n", static_cast<unsigned int>(msg.Data));
+                if(CommunicationError){
+                    CommunicationError = false;
+                    printf("<< KOMUNIKACE OBNOVENA >>\n");
+                }
+			    printf("<< AKTUALNI HLADINA: %u cm >>\n", static_cast<unsigned int>(msg.Data));
             }
-            /* pump error  */
+            /* communication error rise */
+             if(msg.MsgType == MsgDataType::CommunicationError && msg.Data ==1){      
+                if(! CommunicationError ){
+			        printf("<< CHYBA KOMUNIKACE >>\n");
+                    CommunicationError = true;
+                    }   
+            }
+            /* pump error rise */
             if(msg.MsgType == MsgDataType::PumpError && msg.Data ==1){        
-			    printf("!!! CHYBA CERPADLA !!!!\n");
+			    printf("<< CHYBA CERPADLA >>\n");
             }
+            /* pump error clear */
             if(msg.MsgType == MsgDataType::PumpError && msg.Data ==0){        
-			    printf("!!! CERPADLO ODBLOKOVANO !!!!\n");
+			    printf("<< CERPADLO ODBLOKOVANO >>\n");
+            }
+            /* pump start run */
+             if(msg.MsgType == MsgDataType::PumpStatus && msg.Data ==1){        
+			    printf("<< CERPADLO ZAPNUTO >>\n");
+            }
+             /* pump stop */
+             if(msg.MsgType == MsgDataType::PumpStatus && msg.Data ==0){        
+			    printf("<< CERPADLO  VYPNUTO >>\n");
             }
         }
     }   
