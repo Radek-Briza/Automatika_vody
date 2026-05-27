@@ -22,7 +22,6 @@
 #include "crc.h"
 #include "dma.h"
 #include "tim.h"
-//#include "wwdg.h"
 #include "gpio.h"
 
 
@@ -30,14 +29,14 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "FreeRTOS.h"
+#include "FreeRTOS.h" // IWYU pragma: keep.
 #include "task.h"
 #include "sys_app.h"
 #include "App.hpp"
-#include "PumpControl.hpp"
 #include "DisplayModule.hpp"
 #include "ButtonControl.hpp"
 #include  "WdtSystemTask.hpp"
+#include "TaskPriorities.hpp" 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -154,7 +153,7 @@ extern "C" int main(void)
       "Display",
       256,
       nullptr,
-      2,
+       DISPLAY_TASK_PRIOR ,
       nullptr);
   
     configASSERT(Ok == pdPASS);
@@ -164,7 +163,7 @@ extern "C" int main(void)
     "Wdt task",
     256,
     nullptr,
-    2,
+    WDT_SUPERVISOR_TASK_PRIOR,
     nullptr);
 
   configASSERT(Ok == pdPASS);

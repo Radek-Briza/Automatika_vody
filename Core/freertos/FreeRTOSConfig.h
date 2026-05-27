@@ -45,7 +45,7 @@ extern "C" {
 #define configCPU_CLOCK_HZ                      SystemCoreClock
 #define configTICK_RATE_HZ                      100
 
-#define configMAX_PRIORITIES                    8
+#define configMAX_PRIORITIES                    5
 #define configMINIMAL_STACK_SIZE                256
 #define configTOTAL_HEAP_SIZE                   (16 * 1024)
 #define configMAX_TASK_NAME_LEN                 16

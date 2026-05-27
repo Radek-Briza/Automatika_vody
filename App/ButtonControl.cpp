@@ -1,6 +1,8 @@
 #include "ButtonControl.hpp"
 #include "timers.h"
 #include "Common.hpp"
+#include "TaskPriorities.hpp" 
+#include "WdtSystemTask.hpp"
 
 QueueHandle_t gButtonQueue = nullptr;
 
@@ -116,6 +118,7 @@ void ButtonMonitorTask(void*){
                 return HAL_GPIO_ReadPin(btn.port, btn.pin) == GPIO_PIN_RESET;});
         }
         vTaskDelayUntil(&lastWake, period);
+        gAliveMask.fetch_or(TASK_BTN_DRIVER_BIT);  
     }
 }
 
@@ -129,6 +132,6 @@ void ButtonControlInit(void){
     "Buttons",
     512,
     nullptr,
-    2,
+    BUTTON_MONITOR_TASK_PRIOR, 
     nullptr);
 }

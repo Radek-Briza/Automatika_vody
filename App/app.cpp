@@ -8,15 +8,14 @@
 #include "task.h"
 #include  "App.hpp"
 #include "radio.h"	
-#include "stdio.h"
 #include  "DataTransmit.hpp"
 #include "Message.hpp"
 #include "WdtSystemTask.hpp"
 #include "Common.hpp"
 #include "PumpControl.hpp"
+#include "TaskPriorities.hpp" 
 
 
-	
  QueueHandle_t QueuePumpControl = nullptr;
  QueueHandle_t QueueDisplay = nullptr;
  QueueHandle_t QueueLog = nullptr;
@@ -37,7 +36,7 @@ void InitApplication(void){
         "RequestSend",
         256,
         nullptr,
-        2,
+        REQUEST_SENDER_TASK_PRIOR,
         nullptr);
     configASSERT(Create1 == pdPASS);
 
@@ -47,7 +46,7 @@ void InitApplication(void){
         "Response Handler",
         512,
         nullptr,
-        2,
+        RESPONSE_HANDLER_TASK_PRIOR, 
         nullptr);
     configASSERT(Create2 == pdPASS);
 
@@ -60,24 +59,27 @@ void InitApplication(void){
 [[maybe_unused]] 
 void PumpControlTask(void* argument){ 
 	while (1){
+		const TickType_t period =pdMS_TO_TICKS(PUMP_CONTROL_TASK_INTERVAL);
+		TickType_t lastWake = xTaskGetTickCount();
+		
 		PumpControler::GetInstance().ControlPump();
+		vTaskDelayUntil(&lastWake, period);
 		gAliveMask.fetch_or(TASK_PUMP_BIT);  
+
 	}
 }
 
-
+/* init pump driver  */
 void InitPumpSystem(void){
   	auto ErrLed = [](bool on) { 
-		if(on){BSP_LED_On(LED_RED);}
-			else {BSP_LED_Off(LED_RED);}
+		on ? BSP_LED_On(LED_RED) : BSP_LED_Off(LED_RED);
 	};
 	auto RunLed = [](bool on) { 
-		if(on){BSP_LED_On(LED_GREEN);}
-			else {BSP_LED_Off(LED_GREEN);}
+		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
 	};
 	auto RunPin = [](bool on) { 
-		if(on){BSP_LED_On(LED_BLUE);}
-			else {BSP_LED_Off(LED_BLUE);} 
+		on ? HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_SET): 
+		     HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_RESET);
 	};
 	PumpControler::GetInstance().Init(QueuePumpControl,ErrLed,RunLed,RunPin) ;
 	
@@ -86,16 +88,16 @@ void InitPumpSystem(void){
         "Pump control",
         256,
         nullptr,
-        2,
-        nullptr);
-    
+        PUMP_CONTROL_TASK_PRIOR, 
+        nullptr);   
       configASSERT(ok == pdPASS);	  
 } 
 
 /* transmit request task */
 [[maybe_unused]] 
 void RequestSendTask(void* argument){ 
-    while (true){
+    
+	while (true){
        vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
 	   BSP_LED_Toggle(LED_BLUE);
 	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
@@ -111,6 +113,9 @@ void ResponseHandlerTask(void* argument){
 	Message msgPumpControl;
 
     while (true){
+		const TickType_t period =pdMS_TO_TICKS(POLL_NEW_DATA_PERIOD_MS);
+		TickType_t lastWake = xTaskGetTickCount();
+
        /* wait for response */
 		if(DataTransmit::GetInstance().DataAvailable){
 			#if APP_DEBUG_PRINT
@@ -138,22 +143,20 @@ void ResponseHandlerTask(void* argument){
 				ok = xQueueSend(
 					QueuePumpControl,
 					&msgPumpControl ,
-					pdMS_TO_TICKS(300)
+					pdMS_TO_TICKS(100)
 				);
 				configASSERT(ok  == pdPASS) ;		
 			}
 			BSP_LED_Toggle(LED_GREEN);
 			vTaskDelay(pdMS_TO_TICKS(100));
 			BSP_LED_Toggle(LED_GREEN);
-			BSP_LED_Off(LED_RED);
-
+		
 		} /* communication error */
 		else if(DataTransmit::GetInstance().SlaveNotResponding){
 			#if APP_DEBUG_PRINT
 			printf("Slave not responding! No response received within timeout period.\n");
 			#endif
 			DataTransmit::GetInstance().SlaveNotResponding = false; // Reset flag after handling no response
-			BSP_LED_On(LED_RED);
 		
 			/* display - send error state  */
 				msgDisplay.MsgType = MsgDataType::CommunicationError;
@@ -161,10 +164,11 @@ void ResponseHandlerTask(void* argument){
 				auto ok = xQueueSend(
             	QueueDisplay,
             	&msgDisplay ,
-            	pdMS_TO_TICKS(300)
+            	pdMS_TO_TICKS(100)
         		);
 				configASSERT(ok  == pdPASS) ;
 		}
-		gAliveMask.fetch_or(TASK_APP_BIT);
+		vTaskDelayUntil(&lastWake, period);
+		gAliveMask.fetch_or(TASK_APP_BIT);	
 	}
 }
