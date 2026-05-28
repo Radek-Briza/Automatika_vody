@@ -21,12 +21,12 @@ class PumpControler {
             PumpRun,
             PumpStop,
         };
-    
+     using LedHandler = std::function<void(bool)>; 
             
         void Init(QueueHandle_t &QueuePumpControl_,
-                std::function<void(bool)> ErrorLedControl_,
-                std::function<void(bool)> RunLedControl_,
-                std::function<void(bool)> PumpControlPin_ );
+                LedHandler ErrorLedControl_,
+                LedHandler RunLedControl_,
+                LedHandler PumpControlPin_ );
         void ControlPump();
         inline void ClearErrorState(){ErrorCondition = false;ErrorLedControl(false); };
 
