@@ -31,12 +31,14 @@
 /* USER CODE BEGIN Includes */
 #include "FreeRTOS.h" // IWYU pragma: keep.
 #include "task.h"
+#include "common.hpp"
 #include "sys_app.h"
 #include "App.hpp"
 #include "DisplayModule.hpp"
 #include "ButtonControl.hpp"
 #include  "WdtSystemTask.hpp"
 #include "TaskPriorities.hpp" 
+#include "LedController.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -158,6 +160,7 @@ extern "C" int main(void)
   
     configASSERT(Ok == pdPASS);
    
+  #if WDT_ENABLE
   Ok =  xTaskCreate(
     WdtSupervisorTask,
     "Wdt task",
@@ -167,12 +170,15 @@ extern "C" int main(void)
     nullptr);
 
   configASSERT(Ok == pdPASS);
+  #endif
   
   InitApplication();
 
   InitPumpSystem() ; 
 
   ButtonControlInit();  
+  
+  LedDriverInit();
 
   vTaskStartScheduler(); 
 

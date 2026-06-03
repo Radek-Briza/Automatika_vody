@@ -13,7 +13,8 @@
 #include "WdtSystemTask.hpp"
 #include "Common.hpp"
 #include "PumpControl.hpp"
-#include "TaskPriorities.hpp" 
+#include "TaskPriorities.hpp"
+#include "LedController.hpp"
 
 
  QueueHandle_t QueuePumpControl = nullptr;
@@ -71,17 +72,12 @@ void PumpControlTask(void* argument){
 
 /* init pump driver  */
 void InitPumpSystem(void){
-  	auto ErrLed = [](bool on) { 
-		on ? BSP_LED_On(LED_RED) : BSP_LED_Off(LED_RED);
-	};
-	auto RunLed = [](bool on) { 
-		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
-	};
+  	
 	auto RunPin = [](bool on) { 
 		on ? HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_SET): 
 		     HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_RESET);
 	};
-	PumpControler::GetInstance().Init(QueuePumpControl,ErrLed,RunLed,RunPin) ;
+	PumpControler::GetInstance().Init(QueuePumpControl,RunPin) ;
 	
 	auto ok =  xTaskCreate(
         PumpControlTask,
@@ -99,9 +95,8 @@ void RequestSendTask(void* argument){
     
 	while (true){
        vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
-	   BSP_LED_Toggle(LED_BLUE);
 	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
-	   BSP_LED_Toggle(LED_BLUE);
+	   LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::OneShot);
 	   gAliveMask.fetch_or(TASK_REQ_SENDER_BIT);
     }
 }
@@ -111,6 +106,7 @@ void RequestSendTask(void* argument){
 void ResponseHandlerTask(void* argument){ 
 	Message msgDisplay;
 	Message msgPumpControl;
+	bool CommunicationError = false;
 
     while (true){
 		const TickType_t period =pdMS_TO_TICKS(POLL_NEW_DATA_PERIOD_MS);
@@ -148,9 +144,16 @@ void ResponseHandlerTask(void* argument){
 				);
 				configASSERT(ok  == pdPASS) ;		
 			}
-			BSP_LED_Toggle(LED_GREEN);
-			vTaskDelay(pdMS_TO_TICKS(100));
-			BSP_LED_Toggle(LED_GREEN);
+			 /* communication error - end error led   */
+			 if(CommunicationError){
+				CommunicationError = false; 
+				LedController::SetMode(
+    				LedController::Leds::Red,
+    		    	LedController::LedMode::Off);
+			 }
+
+			LedController::SetMode(LedController::Leds::Green,LedController::LedMode::OneShot);
+		
 		
 		} /* communication error */
 		else if(DataTransmit::GetInstance().SlaveNotResponding){
@@ -158,6 +161,7 @@ void ResponseHandlerTask(void* argument){
 			printf("Slave not responding! No response received within timeout period.\n");
 			#endif
 			DataTransmit::GetInstance().SlaveNotResponding = false; // Reset flag after handling no response
+			CommunicationError = true;
 		
 			/* display - send error state  */
 				msgDisplay.MsgType = MsgDataType::CommunicationError;
@@ -168,6 +172,11 @@ void ResponseHandlerTask(void* argument){
             	pdMS_TO_TICKS(100)
         		);
 				configASSERT(ok  == pdPASS) ;
+
+				LedController::SetMode(
+    				LedController::Leds::Red,
+    		    	LedController::LedMode::Blink);
+				
 		}
 		vTaskDelayUntil(&lastWake, period);
 		gAliveMask.fetch_or(TASK_APP_BIT);	

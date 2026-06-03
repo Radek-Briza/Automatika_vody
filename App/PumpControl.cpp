@@ -4,53 +4,52 @@
 #include <cstdio>
 #include "Common.hpp"
 
-std::function<void(bool)> PumpControler::ErrorLedControl=nullptr;
-std::function<void(bool)> PumpControler::RunLedControl=nullptr;
+
+//std::function<void(bool)> PumpControler::ErrorLedControl=nullptr;
+//std::function<void(bool)> PumpControler::RunLedControl=nullptr;
 std::function<void(bool)> PumpControler::PumpControlPin=nullptr;
 bool PumpControler::PumpRun=false ;
 bool PumpControler::ErrorCondition=false ;
 TimerHandle_t PumpControler::PumpRunTimer=nullptr; 
 QueueHandle_t PumpControler::QueuePumpControl=nullptr;
 Message PumpControler::msgDisplay={};
-//MessageButton PumpControler::BtnMsg;
+Message PumpControler::msgPumpControl ={};
 
 
 /* pump overtime  handler */
 [[maybe_unused]] 
 void PumpOvertimerCallback(TimerHandle_t xTimer){
-    configASSERT(PumpControler::RunLedControl   != nullptr) ;
-    configASSERT(PumpControler::PumpControlPin  != nullptr) ;
-    configASSERT(PumpControler::ErrorLedControl != nullptr) ;
-
     if(PumpControler::PumpRun){
-        PumpControler::PumpRun = false;
-        PumpControler::ErrorCondition = true;
-        PumpControler::RunLedControl(false);
-        PumpControler::PumpControlPin(false);
-        PumpControler::ErrorLedControl(true);
+       
         #if APP_DEBUG_PRINT
         printf("Pump overtime - OFF\r\n");
         #endif
        
+        /* error status for pump control task */
+        PumpControler::msgPumpControl.MsgType = MsgDataType::PumpError;
+        PumpControler::msgPumpControl.Data = 1;  // persist 
+        auto ok = xQueueSend(
+        PumpControler::QueuePumpControl,
+        & PumpControler::msgPumpControl ,
+        pdMS_TO_TICKS(10)
+        );
+        configASSERT(ok  == pdPASS) ;
+
         /* error status for  display */
         PumpControler::msgDisplay.MsgType = MsgDataType::PumpError;
         PumpControler::msgDisplay.Data = 1;  // persist 
-        auto ok = xQueueSend(
+        ok = xQueueSend(
         QueueDisplay,
         & PumpControler::msgDisplay ,
-        pdMS_TO_TICKS(300)
+        pdMS_TO_TICKS(10)
         );
         configASSERT(ok  == pdPASS) ;
     }
 }
 
 void PumpControler::Init(QueueHandle_t &QueuePumpControl_,
-                         std::function<void(bool)> ErrorledControl_,
-                         std::function<void(bool)> RunLedControl_,
-                         std::function<void(bool)> PumpControlPin_ ){
-
-        ErrorLedControl = std::move(ErrorledControl_);
-        RunLedControl = std::move(RunLedControl_);    
+                          std::function<void(bool)> PumpControlPin_ ){
+ 
         PumpControlPin = std::move(PumpControlPin_);
         QueuePumpControl = QueuePumpControl_;
 
@@ -65,13 +64,14 @@ void PumpControler::Init(QueueHandle_t &QueuePumpControl_,
 }
 
 void PumpControler::ControlPump(){
-    configASSERT(PumpControler::RunLedControl   != nullptr) ;
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
-    configASSERT(PumpControler::ErrorLedControl != nullptr) ;
     configASSERT(gButtonQueue != nullptr);
     DisplayMessageType NewMessage = DisplayMessageType::NoMessage;
 
-    /* get message  from radio module */
+    
+
+
+    /* get message  from radio module and timer  */
     Message StatusMsg;
     auto ok= xQueueReceive(
                 QueuePumpControl,
@@ -81,8 +81,27 @@ void PumpControler::ControlPump(){
 
     /* new message - level status */
     if(ok == pdPASS){
+
+          /* emergency off */
+          if(StatusMsg.MsgType == MsgDataType::PumpError){
+            if(ErrorCondition==false){
+                ErrorCondition = true;
+                PumpRun = false;
+                PumpControlPin(false);
+                LedController::SetMode(LedController::Leds::Red,LedController::LedMode::On);
+                LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::Off);
+                NewMessage = DisplayMessageType::PumpStop;
+                #if APP_DEBUG_PRINT
+                printf("Pump OFF - error\r\n");
+                #endif
+            }
+        }
+
         if(StatusMsg.MsgType == MsgDataType::LevelStatusData ){
             if(!ErrorCondition){
+
+              
+
                 switch (StatusMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
                     
                     /* under max and middle - hysteresis */
@@ -97,7 +116,7 @@ void PumpControler::ControlPump(){
                         configASSERT(Ok == pdPASS);
                         // gpio pump on 
                         PumpControlPin(true);
-                        RunLedControl(true);
+                        LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
                         NewMessage = DisplayMessageType::PumpRun;
                         #if APP_DEBUG_PRINT
                         printf("Pump ON(1)\r\n");
@@ -110,7 +129,7 @@ void PumpControler::ControlPump(){
                     PumpRun = true;
                     auto Ok = xTimerStart(PumpRunTimer,0U);
                     configASSERT(Ok == pdPASS);
-                    RunLedControl(true);
+                    LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
                     PumpControlPin(true);
                      NewMessage = DisplayMessageType::PumpRun;
                     #if APP_DEBUG_PRINT
@@ -127,7 +146,7 @@ void PumpControler::ControlPump(){
                         PumpRun = false;
                         auto Ok = xTimerStop(PumpRunTimer,0U);
                         configASSERT(Ok == pdPASS);
-                        RunLedControl(false);
+                        LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::Off);
                         PumpControlPin(false);
                          NewMessage = DisplayMessageType::PumpStop;
                         #if APP_DEBUG_PRINT
@@ -165,7 +184,7 @@ void PumpControler::ControlPump(){
         if(BtnMsg.buttonId==1 && BtnMsg.event == ButtonEventType::LongPress){
             if(PumpControler::ErrorCondition == true){
             PumpControler::ErrorCondition = false;
-            PumpControler::ErrorLedControl(false);
+            LedController::SetMode(LedController::Leds::Red,LedController::LedMode::Off);
             /* clear error status for  display */
             msgDisplay.MsgType = MsgDataType::PumpError;
             msgDisplay.Data = 0; // clear 

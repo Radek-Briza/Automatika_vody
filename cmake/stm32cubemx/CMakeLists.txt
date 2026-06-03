@@ -67,6 +67,7 @@ set(MyAplication_src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/PumpControl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DisplayModule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/ButtonControl.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/LedDriver.cpp
 )
 
 # STM32 HAL/LL Drivers

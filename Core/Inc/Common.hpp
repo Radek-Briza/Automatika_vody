@@ -6,8 +6,9 @@
 #define PUMP_CONTROL_TASK_INTERVAL  10u
 
 // debug print switches 
-#define  RADIO_DEBUG_PRINT  0
+#define  RADIO_DEBUG_PRINT  1
 #define  APP_DEBUG_PRINT    0
 
+#define WDT_ENABLE          0
 
 #endif

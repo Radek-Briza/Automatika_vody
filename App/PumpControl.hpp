@@ -3,7 +3,8 @@
 #include "Message.hpp" 
 #include "timers.h"
 #include <functional>
-#include <type_traits>
+//#include <type_traits>
+#include "LedController.hpp"
 
 class PumpControler {
     public:
@@ -14,7 +15,7 @@ class PumpControler {
         static const uint32_t LEVEL_L = (1u << 0);
         static const uint32_t LEVEL_UNDER_M = (1u << 1);
         static const uint32_t LEVEL_H = (1u << 2);
-        static const uint32_t PUMP_MAX_RUN_TIME  =  30000U;
+        static const uint32_t PUMP_MAX_RUN_TIME  =  6000U;
 
         enum class DisplayMessageType{
             NoMessage,
@@ -24,11 +25,9 @@ class PumpControler {
      using LedHandler = std::function<void(bool)>; 
             
         void Init(QueueHandle_t &QueuePumpControl_,
-                LedHandler ErrorLedControl_,
-                LedHandler RunLedControl_,
                 LedHandler PumpControlPin_ );
         void ControlPump();
-        inline void ClearErrorState(){ErrorCondition = false;ErrorLedControl(false); };
+        inline void ClearErrorState(){ErrorCondition = false; LedController::SetMode(LedController::Leds::Red,LedController::LedMode::Off); };
 
     private:
         PumpControler() = default;
@@ -38,14 +37,15 @@ class PumpControler {
         PumpControler(PumpControler&&) = delete;
         PumpControler& operator=(PumpControler&&) = delete;
         
-        static std::function<void(bool)> ErrorLedControl;
-        static std::function<void(bool)> RunLedControl;
+        //static std::function<void(bool)> ErrorLedControl;
+        //static std::function<void(bool)> RunLedControl;
         static std::function<void(bool)> PumpControlPin;
         static bool PumpRun ;
         static bool ErrorCondition ;
         static TimerHandle_t PumpRunTimer; 
         static QueueHandle_t QueuePumpControl;
         static Message msgDisplay;
+        static Message msgPumpControl;
 
         friend void PumpOvertimerCallback(TimerHandle_t xTimer);
 };
