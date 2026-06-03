@@ -32,8 +32,7 @@ public:
     std::atomic<TaskHandle_t> owner;
     };
 
-    using LedCallback =
-        std::function<void(bool)>;
+    using LedCallback = std::function<void(bool)>;
 
     static void Init(
         LedCallback red,
@@ -55,25 +54,18 @@ public:
 
 private:
         static size_t ToIndex(Leds led){
-            const auto index =
-                static_cast<size_t>(led);
-    
+            const auto index = static_cast<size_t>(led);
             configASSERT(index < LED_COUNT);
-    
             return index;
         }
 
-    static constexpr TickType_t PERIOD =
-        pdMS_TO_TICKS(100);
+    static constexpr TickType_t PERIOD = pdMS_TO_TICKS(100);
 
-    static constexpr size_t LED_COUNT =
-        static_cast<size_t>(Leds::Count);
+    static constexpr size_t LED_COUNT = static_cast<size_t>(Leds::Count);
 
     static std::array<LedState, LED_COUNT> leds_;
 
-    static std::array<
-        LedCallback,
-        LED_COUNT> callbacks_;
+    static std::array<LedCallback,LED_COUNT> callbacks_;
 };
 
 

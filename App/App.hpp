@@ -48,5 +48,6 @@ extern "C" {
     void ResponseHandlerTask(void* argument);
     void InitApplication(void);
     void InitPumpSystem(void);
+    void  InitStorage(void);
 }
 

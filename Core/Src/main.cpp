@@ -180,6 +180,8 @@ extern "C" int main(void)
   
   LedDriverInit();
 
+  InitStorage();
+
   vTaskStartScheduler(); 
 
   /* We should never get here as control is now taken by the scheduler */
