@@ -15,7 +15,7 @@
 #include "PumpControl.hpp"
 #include "TaskPriorities.hpp"
 #include "LedController.hpp"
-#include "FlashStorage.hpp"
+
 
 
  QueueHandle_t QueuePumpControl = nullptr;
@@ -181,39 +181,5 @@ void ResponseHandlerTask(void* argument){
 		}
 		vTaskDelayUntil(&lastWake, period);
 		gAliveMask.fetch_or(TASK_APP_BIT);	
-	}
-}
-
-void  InitStorage(void){
-
-	 std::map<std::string,int32_t> Param = {
-		{"PumpOnLevel", 50},
-		{"PumpOffLevel", 20},
-		{"PumpMaxRunTime", 300},
-	}; 
-	FlashParameterStorage storage(PARAM_STORAGE_ADDRESS); // Adresa flash pro uložení parametrů
-
-	
-	if(!storage.ReadRecord(Param)){
-		#if APP_DEBUG_PRINT
-		printf("No valid flash data found, using defaults.\n");
-		#endif
-
-		Param["PumpOnLevel"] = 60;
-		Param["PumpOffLevel"] = 30;	
-		Param["PumpMaxRunTime"] = 350;
-		storage.WriteRecord(Param);
-	}
-	else{
-		#if APP_DEBUG_PRINT
-		printf("Flash data loaded successfully. Record count: %d\n", storage.GetRecordCount());
-		for(const auto& [name,value] : Param){
-			printf("Record: %s = %d\n", name.c_str(), static_cast<int>(value)); 
-
-			Param["PumpOnLevel"] ++;
-			Param["PumpOffLevel"] ++;	
-			storage.WriteRecord(Param);
-		}
-		#endif
 	}
 }

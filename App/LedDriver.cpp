@@ -171,7 +171,6 @@ void LedDriverInit(){
 	};
 	auto  BlueLed = [](bool on) { 
 		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
-		     HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_RESET);
 	};
     LedController::Init(RedLed,GreenLed,BlueLed);
 
