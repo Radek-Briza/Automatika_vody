@@ -120,7 +120,7 @@ void LedController::Task(){
     {
         blinkState = !blinkState;
 
-        for (uint8_t i = 0; i < 3; i++){
+        for (uint8_t i = 0; i < LED_COUNT; i++){
             const LedMode mode =
                 leds_[i].mode.load(
                     std::memory_order_relaxed);
@@ -179,8 +179,8 @@ void LedDriverInit(){
 		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
 	};
 	auto Buzzer = [](bool on) { 
-		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET): 
-		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET);
+		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET): 
+		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET);
 	};
     LedController::Init(RedLed,GreenLed,BlueLed,Buzzer);
 

@@ -88,8 +88,15 @@ void PumpControler::ControlPump(){
                 ErrorCondition = true;
                 PumpRun = false;
                 PumpControlPin(false);
-                LedController::SetMode(LedController::Leds::Red,LedController::LedMode::On);
-                LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::Off);
+                LedController::SetMode(
+                    LedController::Leds::Red,
+                    LedController::LedMode::On);
+                LedController::SetMode(
+                    LedController::Leds::Blue,
+                    LedController::LedMode::Off);
+                LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::Blink);
                 NewMessage = DisplayMessageType::PumpStop;
                 #if APP_DEBUG_PRINT
                 printf("Pump OFF - error\r\n");
@@ -184,7 +191,12 @@ void PumpControler::ControlPump(){
         if(BtnMsg.buttonId==1 && BtnMsg.event == ButtonEventType::LongPress){
             if(PumpControler::ErrorCondition == true){
             PumpControler::ErrorCondition = false;
-            LedController::SetMode(LedController::Leds::Red,LedController::LedMode::Off);
+            LedController::SetMode(
+                LedController::Leds::Red,
+                LedController::LedMode::Off);
+            LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::Off);
             /* clear error status for  display */
             msgDisplay.MsgType = MsgDataType::PumpError;
             msgDisplay.Data = 0; // clear 

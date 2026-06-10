@@ -88,6 +88,21 @@ void SystemApp_Init(void)
 #if 1
 /* USER CODE END Overload_HAL_weaks_1 */
 
+/**
+  * @note This function overwrites the __weak one from HAL
+  */
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
+{
+  /*Don't enable SysTick if TIMER_IF is based on other counters (e.g. RTC) */
+  /* USER CODE BEGIN HAL_InitTick_1 */
+
+  /* USER CODE END HAL_InitTick_1 */
+  return HAL_OK;
+  /* USER CODE BEGIN HAL_InitTick_2 */
+
+  /* USER CODE END HAL_InitTick_2 */
+}
+
 /* USER CODE BEGIN Overload_HAL_weaks_1a */
 
 /* USER CODE END Overload_HAL_weaks_1a */
