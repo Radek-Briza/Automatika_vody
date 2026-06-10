@@ -7,8 +7,5 @@
         "--compile-commands-dir=build/Release",
         "--query-driver=C:/PROGRA~2/GNUARM~1/**,C:/Program Files (x86)/GNU Arm Embedded Toolchain/**"
     ],
-    "cmake.cmakePath": "cube-cmake",
-    "cmake.configureArgs": [
-        "-DCMAKE_COMMAND=cube-cmake"
-    ]
+    "cmake.cmakePath": "cmake"
 }

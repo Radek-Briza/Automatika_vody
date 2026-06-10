@@ -16,7 +16,8 @@ set(FREERTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Third_Party/FreeR
 set(MX_Include_Dirs
    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/freertos
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Inc
-     ${CMAKE_CURRENT_SOURCE_DIR}/../../App
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Display/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../SubGHz_Phy/App
     ${CMAKE_CURRENT_SOURCE_DIR}/../../SubGHz_Phy/Target
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32WLxx_HAL_Driver/Inc
@@ -29,6 +30,7 @@ set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Device/ST/STM32WLxx/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Third_Party/SubGHz_Phy/radio_driver
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Include
+
     ${FREERTOS_DIR}/include
     ${FREERTOS_DIR}/portable/GCC/ARM_CM3
 )
@@ -62,14 +64,21 @@ set(MX_Application_Src
 
 # my application 
 set(MyAplication_src
-     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DataTransmit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/Packet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/PumpControl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DisplayModule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/ButtonControl.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/LedDriver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/FlashStorage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/LedDriver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/FlashStorage.cpp
+)
+
+set(DisplayDriver_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Display/src/SSD1306_OLED.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Display/src/SSD1306_OLED_font.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Display/src/SSD1306_OLED_graphics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Display/src/SSD1306_OLED_Print.cpp
 )
 
 # STM32 HAL/LL Drivers
@@ -148,6 +157,7 @@ set(MX_LINK_LIBS
 	FreeRTOS
 	SubGHz_Phy
     MyApp
+    DisplayDriver
    ${TOOLCHAIN_LINK_LIBRARIES}
 )
 # Interface library for includes and symbols
@@ -181,6 +191,12 @@ target_link_libraries(SubGHz_Phy PUBLIC stm32cubemx)
 add_library(MyApp OBJECT) 
 target_sources(MyApp PRIVATE ${MyAplication_src})
 target_link_libraries(MyApp PUBLIC stm32cubemx)
+
+#create  display lib
+add_library(DisplayDriver OBJECT)
+target_sources(DisplayDriver PRIVATE ${DisplayDriver_src})
+target_link_libraries(DisplayDriver PUBLIC stm32cubemx)
+
 
 # Add STM32CubeMX generated application sources to the project
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})
