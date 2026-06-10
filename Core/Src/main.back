@@ -21,24 +21,15 @@
 #include "adc.h"
 #include "crc.h"
 #include "dma.h"
+#include "i2c.h"
+#include "iwdg.h"
+#include "app_subghz_phy.h"
 #include "tim.h"
 #include "gpio.h"
-#include "i2c.h"
-
-#include "App.hpp"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "FreeRTOS.h" // IWYU pragma: keep.
-#include "task.h"
-#include "common.hpp"
-#include "sys_app.h"
-#include "App.hpp"
-#include "DisplayModule.hpp"
-#include "ButtonControl.hpp"
-#include  "WdtSystemTask.hpp"
-#include "TaskPriorities.hpp" 
-#include "LedController.hpp"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,39 +52,25 @@
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern "C" void vApplicationMallocFailedHook(void) 
-{
-    printf("Malloc failed\r\n");
-  for (;;)
-    {
-    }
-}
 
-extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char*)
-{
-    printf("Stack overflow\r\n");
-    for (;;)
-    {
-    }
-}
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
   */
-extern "C" int main(void)
+int main(void)
 {
 
   /* USER CODE BEGIN 1 */
@@ -113,30 +90,32 @@ extern "C" int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  SystemApp_Init();
-  setvbuf(stdout, NULL, _IONBF, 0 );  
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_SubGHz_Phy_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_CRC_Init();
-  MX_ADC_Init(); 
+  MX_ADC_Init();
+  MX_IWDG_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
-
-  /* Init scheduler */
-  
 
   /* Initialize leds */
   BSP_LED_Init(LED_BLUE);
   BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_RED);
 
+  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
+  BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
+  BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
+  BSP_PB_Init(BUTTON_SW3, BUTTON_MODE_EXTI);
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
   BspCOMInit.BaudRate   = 115200;
@@ -149,48 +128,13 @@ extern "C" int main(void)
     Error_Handler();
   }
 
-  printf("\r\nAutomatika vody ver 1.00 \r\n") ;
-
-  auto Ok =  xTaskCreate(
-      DisplayTask,
-      "Display",
-      256,
-      nullptr,
-       DISPLAY_TASK_PRIOR ,
-      nullptr);
-  
-    configASSERT(Ok == pdPASS);
-   
-  #if WDT_ENABLE
-  Ok =  xTaskCreate(
-    WdtSupervisorTask,
-    "Wdt task",
-    256,
-    nullptr,
-    WDT_SUPERVISOR_TASK_PRIOR,
-    nullptr);
-
-  configASSERT(Ok == pdPASS);
-  #endif
-  
-  InitApplication();
-
-  InitPumpSystem() ; 
-
-  ButtonControlInit();  
-  
-  LedDriverInit();
-
-  vTaskStartScheduler(); 
-
-  /* We should never get here as control is now taken by the scheduler */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 
     /* USER CODE END WHILE */
+    MX_SubGHz_Phy_Process();
 
     /* USER CODE BEGIN 3 */
   }

@@ -9,16 +9,18 @@
 
 std::array<LedController::LedState, LedController::LED_COUNT> LedController::leds_;
 
-std::array<LedController::LedCallback,3> LedController::callbacks_;
+std::array<LedController::LedCallback, LedController::LED_COUNT> LedController::callbacks_;
 
 void LedController::Init(
     LedCallback led0,
     LedCallback led1,
-    LedCallback led2){
+    LedCallback led2,
+    LedCallback buzzer){
     
     callbacks_[0] = led0;
     callbacks_[1] = led1;
     callbacks_[2] = led2;
+    callbacks_[3] = buzzer;
 
     leds_[0].mode.store(
         LedMode::Off,
@@ -33,7 +35,11 @@ void LedController::Init(
     leds_[2].mode.store(
         LedMode::Off,
         std::memory_order_relaxed);
-    leds_[2].owner.store(nullptr, std::memory_order_relaxed);       
+    leds_[2].owner.store(nullptr, std::memory_order_relaxed);      
+    
+    leds_[3].mode.store(
+        LedMode::Off,
+        std::memory_order_relaxed);
 }
 
 
@@ -172,7 +178,11 @@ void LedDriverInit(){
 	auto  BlueLed = [](bool on) { 
 		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
 	};
-    LedController::Init(RedLed,GreenLed,BlueLed);
+	auto Buzzer = [](bool on) { 
+		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET): 
+		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET);
+	};
+    LedController::Init(RedLed,GreenLed,BlueLed,Buzzer);
 
     xTaskCreate(
     LedTask,

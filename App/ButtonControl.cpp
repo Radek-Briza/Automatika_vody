@@ -23,10 +23,11 @@ void SendButtonEvent(uint8_t id, ButtonEventType evt){
         #endif 
 }
 
-ButtonContext gButtons[3] ={
+ButtonContext gButtons[4] ={
     { BT_1_GPIO_Port, BT_1_Pin },
     { BT_2_GPIO_Port, BT_2_Pin },
-    { BT_3_GPIO_Port, BT_3_Pin }
+    { BT_3_GPIO_Port, BT_3_Pin },
+    { Deblock_GPIO_Port, Deblock_Pin }
 };
 
 bool IsButtonPressed(const ButtonContext& btn){
@@ -110,7 +111,7 @@ void ButtonMonitorTask(void*){
         xTaskGetTickCount();
 
     for (;;){
-        for (uint8_t i = 0; i < 3; i++){
+        for (uint8_t i = 0; i < BUTTON_COUNT; i++){
            ProcessButton(
         gButtons[i],
             i,

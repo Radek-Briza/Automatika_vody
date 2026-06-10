@@ -9,6 +9,7 @@ constexpr TickType_t POLL_PERIOD_MS       = 10;
 constexpr TickType_t DEBOUNCE_PRESS_MS    = 100;
 constexpr TickType_t DEBOUNCE_RELEASE_MS  = 100;
 constexpr TickType_t LONG_PRESS_MS        = 1500;
+constexpr uint8_t BUTTON_COUNT = 4;
 
 
 enum class ButtonState{

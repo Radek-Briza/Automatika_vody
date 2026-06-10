@@ -151,6 +151,9 @@ void ResponseHandlerTask(void* argument){
 				LedController::SetMode(
     				LedController::Leds::Red,
     		    	LedController::LedMode::Off);
+					LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::Off);
 			 }
 
 			LedController::SetMode(LedController::Leds::Green,LedController::LedMode::OneShot);
@@ -177,6 +180,9 @@ void ResponseHandlerTask(void* argument){
 				LedController::SetMode(
     				LedController::Leds::Red,
     		    	LedController::LedMode::Blink);
+				LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::Blink);
 				
 		}
 		vTaskDelayUntil(&lastWake, period);

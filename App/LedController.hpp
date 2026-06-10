@@ -17,6 +17,7 @@ public:
         Red = 0,
         Green,
         Blue,
+        Buzzer,
         Count
     };
 
@@ -37,7 +38,9 @@ public:
     static void Init(
         LedCallback red,
         LedCallback green,
-        LedCallback blue);
+        LedCallback blue,
+        LedCallback buzzer
+    );
 
     static bool Acquire(Leds led);
   
