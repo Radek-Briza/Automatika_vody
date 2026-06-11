@@ -6,8 +6,10 @@
 */
 
 #include "../include/SSD1306_OLED.hpp" 
-#include "main.h"
+#include "main.h" // IWYU pragma: keep.
 #include "i2c.h"
+
+extern "C" uint32_t TIMER_IF_Convert_ms2Tick(uint32_t timeMilliSec);
 
 /*!
 	@brief init the screen object
@@ -316,9 +318,12 @@ void SSD1306::I2C_Write_Byte(uint8_t value, uint8_t cmd)
 	uint8_t attemptI2Cwrite = _I2C_ErrorRetryNum;
 	HAL_StatusTypeDef halres = HAL_ERROR;
 
+
 	while (attemptI2Cwrite--)
 	{
-		halres = HAL_I2C_Master_Transmit(&hi2c2, (uint16_t)(_I2C_address << 1), ByteBuffer, 2, (uint32_t)_I2C_ErrorDelay);
+		halres = HAL_I2C_Master_Transmit(&hi2c2, (uint16_t)(_I2C_address << 1),
+		 							ByteBuffer, 2,
+		  					TIMER_IF_Convert_ms2Tick(_I2C_ErrorDelayMs));
 		if (halres == HAL_OK)
 		{
 			_I2C_ErrorFlag = 0;
@@ -327,12 +332,24 @@ void SSD1306::I2C_Write_Byte(uint8_t value, uint8_t cmd)
 
 		if (_I2C_DebugFlag == true)
 		{
-			printf("Error I2C_Write_Byte : Cannot Write byte, attempts left :: %u\n", (unsigned)attemptI2Cwrite);
-			printf("HAL_I2C_GetError code :: %lu\n", (unsigned long)HAL_I2C_GetError(&hi2c2));
+			printf("Error I2C_Write_Byte : Cannot Write byte, attempts left :: %d\n", (unsigned)attemptI2Cwrite);
+			printf("HAL_I2C_GetError code :: 0x%lx, I2C State :: 0x%x\n", HAL_I2C_GetError(&hi2c2), HAL_I2C_GetState(&hi2c2));
 		}
-		HAL_Delay(_I2C_ErrorDelay); // delay mS
+		// I2C bus recovery: reset and reinitialize if not ready
+		if (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
+		{
+			if (_I2C_DebugFlag == true)
+			{
+				printf("I2C Bus Recovery: DeInit and reinit I2C\n");
+			}
+			HAL_I2C_DeInit(&hi2c2);
+			HAL_Delay(10);
+			HAL_I2C_Init(&hi2c2);
+		}
+		HAL_Delay(_I2C_ErrorDelayMs); // delay mS
 		_I2C_ErrorFlag = 1;
 	}
+
 }
 
 /*!
@@ -562,7 +579,7 @@ uint8_t SSD1306::OLEDI2CErrorGet(void) { return _I2C_ErrorFlag;}
 */
 void SSD1306::OLEDI2CErrorTimeoutSet(uint16_t newTimeout)
 {
-	_I2C_ErrorDelay = newTimeout;
+	_I2C_ErrorDelayMs = newTimeout;
 }
 
 /*!
@@ -570,7 +587,7 @@ void SSD1306::OLEDI2CErrorTimeoutSet(uint16_t newTimeout)
 	 @details Delay between retry attempts in event of an error , mS
 	 @return  I2C timeout delay in mS, _I2C_ErrorDelay
 */
-uint16_t SSD1306::OLEDI2CErrorTimeoutGet(void){return _I2C_ErrorDelay;}
+uint16_t SSD1306::OLEDI2CErrorTimeoutGet(void){return _I2C_ErrorDelayMs;}
 
 /*!
 	 @brief Gets the I2C error retry attempts, used in the event of an I2C write error
@@ -595,7 +612,8 @@ void SSD1306::OLEDI2CErrorRetryNumSet(uint8_t AttemptCount)
 */ 
 uint8_t SSD1306::OLEDCheckConnection(void)
 {
-	HAL_StatusTypeDef res = HAL_I2C_IsDeviceReady(&hi2c2, (uint16_t)(_I2C_address << 1), 1, _I2C_ErrorDelay);
+	HAL_StatusTypeDef res = HAL_I2C_IsDeviceReady(&hi2c2,(uint16_t)(_I2C_address << 1), 1,
+		  									TIMER_IF_Convert_ms2Tick(_I2C_ErrorDelayMs));
 	if (res == HAL_OK)
 	{
 		_I2C_ErrorFlag = 0;

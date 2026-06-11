@@ -62,7 +62,7 @@
 #define SSD1306_COMMAND        0x00
 #define SSD1306_DATA           0xC0
 #define SSD1306_DATA_CONTINUE  0x40
-#define SSD1306_ADDR           0x3C  /**< I2C address alt 0x3D */
+#define SSD1306_ADDR            0x3C  /**< I2C address alt 0x3D */
 
 #define SSD1306_command(Reg)  I2C_Write_Byte(Reg, SSD1306_COMMAND)
 #define SSD1306_data(Data)    I2C_Write_Byte(Data, SSD1306_DATA_CONTINUE)
@@ -136,7 +136,8 @@ class SSD1306 : public SSD1306_graphics  {
 	uint16_t _I2C_speed = 100; /**< Speed of I2C bus in kHz (default 100 = 100kHz) */
 	uint8_t _I2C_address = SSD1306_ADDR ; /**< I2C address */
 	bool _I2C_DebugFlag = false; /**< I2C debug flag default false  */
-	uint16_t _I2C_ErrorDelay = 100; /**<I2C delay(in between retry attempts) in event of error in mS*/
+	uint32_t _I2C_ErrorDelayMs = 100; /**<I2C delay(in between retry attempts) in event of error in mS*/
+
 	uint8_t _I2C_ErrorRetryNum = 3; /**< In event of I2C error number of retry attempts*/
 	uint8_t _I2C_ErrorFlag = 0x00; /**< I2C error flag: 0 = success, non-zero = error */
 

@@ -8,33 +8,38 @@
 #define myOLEDwidth  128
 #define myOLEDheight 64
 #define FULLSCREEN (myOLEDwidth * (myOLEDheight/8))
-SSD1306 myOLED(myOLEDwidth ,myOLEDheight) ; // instantiate a OLED object
+
 
 
 [[maybe_unused]] 
 void DisplayTask(void* argument){ 
-   bool CommunicationError =false;
+
+    
+    
+    bool CommunicationError =false;
     Message msg;
     
-    /* oled initialization */
+    
+    //oled initialization 
+    SSD1306 myOLED(myOLEDwidth ,myOLEDheight) ; // instantiate a OLED object
     uint8_t  screenBuffer[FULLSCREEN];
     const uint8_t I2C_Address = 0x3C;
-    bool I2C_debug = false;
-    printf("OLED Test Begin\r\n");
+    bool I2C_debug = true;
+    printf("\n\rOLED Test Begin\r\n");
     // Turn on I2C bus (optionally it may already be on)
     if(!myOLED.OLED_I2C_ON()){
-	    printf("Error 1202: bcm2835_i2c_begin :Cannot start I2C, Running as root?\n");
+	    printf("Cannot start I2C\n");
 	
     }
     else {
-        printf("SSD1306 library Version Number :: %u\r\n",myOLED.getLibVerNum());
-        HAL_Delay(500);
+       
+        HAL_Delay(100);
         myOLED.OLEDbegin( I2C_Address, I2C_debug); // initialize the OLED
         myOLED.OLEDFillScreen(0xF0, 0); // splash screen bars, optional just for effect
         if (!myOLED.OLEDSetBufferPtr(
             myOLEDwidth, myOLEDheight,
-             screenBuffer,
-              sizeof(screenBuffer))) return;
+            screenBuffer,
+            sizeof(screenBuffer))) return;
         myOLED.OLEDclearBuffer();
         myOLED.setTextColor(WHITE);
         myOLED.setCursor(10, 10);
