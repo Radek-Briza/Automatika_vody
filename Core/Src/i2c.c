@@ -95,7 +95,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     PA12     ------> I2C2_SCL
     PA15     ------> I2C2_SDA
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_15;
+    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_11;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

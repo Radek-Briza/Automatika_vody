@@ -103,6 +103,7 @@ extern "C" int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -154,7 +155,7 @@ extern "C" int main(void)
   auto Ok =  xTaskCreate(
       DisplayTask,
       "Display",
-      256,
+      1024,
       nullptr,
        DISPLAY_TASK_PRIOR ,
       nullptr);
