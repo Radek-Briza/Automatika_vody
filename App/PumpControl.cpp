@@ -68,9 +68,6 @@ void PumpControler::ControlPump(){
     configASSERT(gButtonQueue != nullptr);
     DisplayMessageType NewMessage = DisplayMessageType::NoMessage;
 
-    
-
-
     /* get message  from radio module and timer  */
     Message StatusMsg;
     auto ok= xQueueReceive(
@@ -106,9 +103,6 @@ void PumpControler::ControlPump(){
 
         if(StatusMsg.MsgType == MsgDataType::LevelStatusData ){
             if(!ErrorCondition){
-
-              
-
                 switch (StatusMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
                     
                     /* under max and middle - hysteresis */
@@ -125,6 +119,10 @@ void PumpControler::ControlPump(){
                         PumpControlPin(true);
                         LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
                         NewMessage = DisplayMessageType::PumpRun;
+                        LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::OneShot);
+               
                         #if APP_DEBUG_PRINT
                         printf("Pump ON(1)\r\n");
                         #endif
@@ -139,6 +137,9 @@ void PumpControler::ControlPump(){
                     LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
                     PumpControlPin(true);
                      NewMessage = DisplayMessageType::PumpRun;
+                      LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::OneShot);
                     #if APP_DEBUG_PRINT
                     printf("Pump ON(2)\r\n");
                     #endif
@@ -155,6 +156,9 @@ void PumpControler::ControlPump(){
                         configASSERT(Ok == pdPASS);
                         LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::Off);
                         PumpControlPin(false);
+                        LedController::SetMode(
+				    LedController::Leds::Buzzer,
+				    LedController::LedMode::OneShot);
                          NewMessage = DisplayMessageType::PumpStop;
                         #if APP_DEBUG_PRINT
                         printf("Pump OFF\r\n");
