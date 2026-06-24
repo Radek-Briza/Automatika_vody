@@ -28,6 +28,7 @@ void DisplayTask(void* argument){
     uint8_t step =0;
     
     //oled initialization 
+    #if  DISPLAY_MODULE_ENABLE
     SSD1306 myOLED(myOLEDwidth ,myOLEDheight) ; // instantiate a OLED object
     uint8_t  screenBuffer[FULLSCREEN];
     const uint8_t I2C_Address = 0x3C;
@@ -53,6 +54,7 @@ void DisplayTask(void* argument){
         myOLED.print("Hladina:");
         myOLED.OLEDupdate();
     }
+    #endif
 
     while (true){  
         auto ok= xQueueReceive(
@@ -111,6 +113,7 @@ void DisplayTask(void* argument){
         }
         
         /* update display if needed */
+        #if  DISPLAY_MODULE_ENABLE
         if(displayNeedsUpdate){
 
              /* pump error */
@@ -181,10 +184,8 @@ void DisplayTask(void* argument){
             if(displayUpdate == 0){
                 displayNeedsUpdate = false;
             }
+           
         }
-
-
+         #endif
     }   
-
-
 }  
