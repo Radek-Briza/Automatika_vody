@@ -13,6 +13,7 @@ enum class MsgDataType {
     PumpStatus,
     PumpError,
     CommunicationError,
+    AtomatikaOff,
     UnknownDataType
 };
 
@@ -25,7 +26,7 @@ struct Message{
 enum class ButtonEventType{
     Press,
     LongPress,
-    Release
+    Release,
 };
 
 struct MessageButton{

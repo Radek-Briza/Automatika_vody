@@ -14,6 +14,7 @@ TimerHandle_t PumpControler::PumpRunTimer=nullptr;
 QueueHandle_t PumpControler::QueuePumpControl=nullptr;
 Message PumpControler::msgDisplay={};
 Message PumpControler::msgPumpControl ={};
+bool PumpControler::AutomaticModeOn = false;
 
 
 /* pump overtime  handler */
@@ -86,10 +87,10 @@ void PumpControler::ControlPump(){
                 PumpRun = false;
                 PumpControlPin(false);
                 LedController::SetMode(
-                    LedController::Leds::Red,
+                    LedController::Leds::ErrorLed,
                     LedController::LedMode::On);
                 LedController::SetMode(
-                    LedController::Leds::Blue,
+                    LedController::Leds::PumpOnLed,
                     LedController::LedMode::Off);
                 LedController::SetMode(
 					LedController::Leds::Buzzer,
@@ -111,13 +112,13 @@ void PumpControler::ControlPump(){
 
                     /* under max , turn ON pump*/
                     case LEVEL_L:
-                    if(! PumpRun){
+                    if(! PumpRun && AutomaticModeOn){
                         PumpRun = true;
                         auto Ok = xTimerStart(PumpRunTimer,0U);
                         configASSERT(Ok == pdPASS);
                         // gpio pump on 
                         PumpControlPin(true);
-                        LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
+                        LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::On);
                         NewMessage = DisplayMessageType::PumpRun;
                         LedController::SetMode(
 					LedController::Leds::Buzzer,
@@ -130,11 +131,11 @@ void PumpControler::ControlPump(){
                     break;
                 /* drop level  */
                 case LEVEL_UNDER_M:
-                if(!PumpRun ){
+                if(!PumpRun && AutomaticModeOn){
                     PumpRun = true;
                     auto Ok = xTimerStart(PumpRunTimer,0U);
                     configASSERT(Ok == pdPASS);
-                    LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::On);
+                    LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::On);
                     PumpControlPin(true);
                      NewMessage = DisplayMessageType::PumpRun;
                       LedController::SetMode(
@@ -154,7 +155,7 @@ void PumpControler::ControlPump(){
                         PumpRun = false;
                         auto Ok = xTimerStop(PumpRunTimer,0U);
                         configASSERT(Ok == pdPASS);
-                        LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::Off);
+                        LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::Off);
                         PumpControlPin(false);
                         LedController::SetMode(
 				    LedController::Leds::Buzzer,
@@ -192,11 +193,48 @@ void PumpControler::ControlPump(){
 
     /* new message - button */
     if(ok == pdPASS){
+        /* enable automatic mode - if  enable pin is active */
+        if(BtnMsg.buttonId==2) {
+           if(BtnMsg.event == ButtonEventType::Press){
+                AutomaticModeOn = true;
+                LedController::SetMode(
+                LedController::Leds::PumpOnLed,
+                LedController::LedMode::On);
+                printf("<<<< Automatika ON >>>>\r\n");
+            }else{
+                /* disable automatic mode */
+                msgDisplay.MsgType = MsgDataType::AtomatikaOff;
+                msgDisplay.Data = 0; // clear 
+                auto ok = xQueueSend(
+                QueueDisplay,
+                &msgDisplay ,
+                pdMS_TO_TICKS(300)
+                );
+                configASSERT(ok  == pdPASS) ;
+
+                AutomaticModeOn = false;
+                if(PumpRun  ){
+                    PumpRun = false;
+                    auto Ok = xTimerStop(PumpRunTimer,0U);
+                    configASSERT(Ok == pdPASS);
+                    LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::Off);
+                    PumpControlPin(false);
+                }
+                LedController::SetMode(
+                LedController::Leds::PumpOnLed,
+                LedController::LedMode::Off);
+                #if APP_DEBUG_PRINT
+                printf("<<<< Automatika OFF >>>>\r\n");
+                #endif
+            }
+        }
+    
+        /* deblock */
         if(BtnMsg.buttonId==1 && BtnMsg.event == ButtonEventType::LongPress){
             if(PumpControler::ErrorCondition == true){
             PumpControler::ErrorCondition = false;
             LedController::SetMode(
-                LedController::Leds::Red,
+                LedController::Leds::ErrorLed,
                 LedController::LedMode::Off);
             LedController::SetMode(
 					LedController::Leds::Buzzer,

@@ -14,9 +14,9 @@ class LedController{
 public:
 
     enum class Leds : uint8_t{
-        Red = 0,
-        Green,
-        Blue,
+        ErrorLed = 0,
+        CommunicationLed,
+        PumpOnLed,
         Buzzer,
         Count
     };
@@ -39,7 +39,8 @@ public:
         LedCallback red,
         LedCallback green,
         LedCallback blue,
-        LedCallback buzzer
+        LedCallback buzzer,
+        LedCallback pumpOn
     );
 
     static bool Acquire(Leds led);

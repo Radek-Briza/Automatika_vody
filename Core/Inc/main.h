@@ -77,14 +77,16 @@ void Error_Handler(void);
 #define FE_CTRL2_GPIO_Port GPIOC
 #define Deblock_Pin GPIO_PIN_9
 #define Deblock_GPIO_Port GPIOA
+#define KOMUNIKACE_Pin GPIO_PIN_12
+#define KOMUNIKACE_GPIO_Port GPIOB
+#define ERROR_LED_Pin GPIO_PIN_1
+#define ERROR_LED_GPIO_Port GPIOC
 #define FE_CTRL1_Pin GPIO_PIN_4
 #define FE_CTRL1_GPIO_Port GPIOC
-#define BT_1_Pin GPIO_PIN_0
-#define BT_1_GPIO_Port GPIOA
-#define BT_3_Pin GPIO_PIN_6
-#define BT_3_GPIO_Port GPIOC
-#define BT_2_Pin GPIO_PIN_1
-#define BT_2_GPIO_Port GPIOA
+#define AUTOMATIKA_ON_Pin GPIO_PIN_7
+#define AUTOMATIKA_ON_GPIO_Port GPIOA
+#define CERPADLO_ON_Pin GPIO_PIN_4
+#define CERPADLO_ON_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

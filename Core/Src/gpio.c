@@ -50,13 +50,16 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port, PUMP_CONTROL_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, PUMP_CONTROL_Pin|KOMUNIKACE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Buzzer_GPIO_Port, Buzzer_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, FE_CTRL3_Pin|FE_CTRL2_Pin|FE_CTRL1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, FE_CTRL3_Pin|FE_CTRL2_Pin|ERROR_LED_Pin|FE_CTRL1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CERPADLO_ON_GPIO_Port, CERPADLO_ON_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PUMP_CONTROL_Pin */
   GPIO_InitStruct.Pin = PUMP_CONTROL_Pin;
@@ -79,24 +82,32 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Deblock_Pin */
-  GPIO_InitStruct.Pin = Deblock_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(Deblock_GPIO_Port, &GPIO_InitStruct);
-
- /*Configure GPIO pins : BT_1_Pin BT_2_Pin */
-  GPIO_InitStruct.Pin = BT_1_Pin|BT_2_Pin;
+  /*Configure GPIO pins : Deblock_Pin AUTOMATIKA_ON_Pin */
+  GPIO_InitStruct.Pin = Deblock_Pin|AUTOMATIKA_ON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : BT_3_Pin */
-  GPIO_InitStruct.Pin = BT_3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : KOMUNIKACE_Pin */
+  GPIO_InitStruct.Pin = KOMUNIKACE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(BT_3_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(KOMUNIKACE_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : ERROR_LED_Pin */
+  GPIO_InitStruct.Pin = ERROR_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(ERROR_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CERPADLO_ON_Pin */
+  GPIO_InitStruct.Pin = CERPADLO_ON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(CERPADLO_ON_GPIO_Port, &GPIO_InitStruct);
 
 }
 

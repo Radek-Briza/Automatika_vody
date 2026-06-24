@@ -27,7 +27,7 @@ class PumpControler {
         void Init(QueueHandle_t &QueuePumpControl_,
                 LedHandler PumpControlPin_ );
         void ControlPump();
-        inline void ClearErrorState(){ErrorCondition = false; LedController::SetMode(LedController::Leds::Red,LedController::LedMode::Off); };
+        inline void ClearErrorState(){ErrorCondition = false; LedController::SetMode(LedController::Leds::ErrorLed,LedController::LedMode::Off); };
 
     private:
         PumpControler() = default;
@@ -40,6 +40,7 @@ class PumpControler {
         //static std::function<void(bool)> ErrorLedControl;
         //static std::function<void(bool)> RunLedControl;
         static std::function<void(bool)> PumpControlPin;
+        static bool AutomaticModeOn;
         static bool PumpRun ;
         static bool ErrorCondition ;
         static TimerHandle_t PumpRunTimer; 

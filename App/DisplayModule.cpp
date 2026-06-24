@@ -110,6 +110,13 @@ void DisplayTask(void* argument){
                 displayNeedsUpdate = true;
                  step =0;
             }
+            /* automatika off */
+            if(msg.MsgType == MsgDataType::AtomatikaOff && msg.Data ==0){        
+			    printf("<< AUTOMATIKA VYPNUTA >>\n");
+                displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::PumpRun));
+                displayNeedsUpdate = true;
+                 step =0;
+            }
         }
         
         /* update display if needed */

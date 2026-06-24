@@ -15,12 +15,14 @@ void LedController::Init(
     LedCallback led0,
     LedCallback led1,
     LedCallback led2,
-    LedCallback buzzer){
+    LedCallback buzzer, 
+    LedCallback pumpControl){
     
     callbacks_[0] = led0;
     callbacks_[1] = led1;
     callbacks_[2] = led2;
     callbacks_[3] = buzzer;
+    callbacks_[4] = pumpControl;
 
     leds_[0].mode.store(
         LedMode::Off,
@@ -40,6 +42,12 @@ void LedController::Init(
     leds_[3].mode.store(
         LedMode::Off,
         std::memory_order_relaxed);
+    leds_[3].owner.store(nullptr, std::memory_order_relaxed);
+
+    leds_[4].mode.store(
+        LedMode::Off,
+        std::memory_order_relaxed);
+    leds_[4].owner.store(nullptr, std::memory_order_relaxed);
 }
 
 
@@ -169,20 +177,29 @@ void LedTask(void*){
 
 void LedDriverInit(){
 
-	auto RedLed = [](bool on) { 
-		on ? BSP_LED_On(LED_RED) : BSP_LED_Off(LED_RED);
+	auto ErrorLed = [](bool on) { 
+		on ? HAL_GPIO_WritePin(ERROR_LED_GPIO_Port, ERROR_LED_Pin, GPIO_PIN_SET) : 
+             HAL_GPIO_WritePin(ERROR_LED_GPIO_Port, ERROR_LED_Pin, GPIO_PIN_RESET);
 	};
-	auto GreenLed = [](bool on) { 
-		 on ? BSP_LED_On(LED_GREEN) : BSP_LED_Off(LED_GREEN);
+	auto CommunicationLed = [](bool on) { 
+		 on ? HAL_GPIO_WritePin(KOMUNIKACE_GPIO_Port, KOMUNIKACE_Pin, GPIO_PIN_SET) : 
+              HAL_GPIO_WritePin(KOMUNIKACE_GPIO_Port, KOMUNIKACE_Pin, GPIO_PIN_RESET);
 	};
-	auto  BlueLed = [](bool on) { 
-		 on ? BSP_LED_On(LED_BLUE) : BSP_LED_Off(LED_BLUE);
+	auto  PumpOn = [](bool on) { 
+		 on ? HAL_GPIO_WritePin(CERPADLO_ON_GPIO_Port, CERPADLO_ON_Pin, GPIO_PIN_SET) : 
+              HAL_GPIO_WritePin(CERPADLO_ON_GPIO_Port, CERPADLO_ON_Pin, GPIO_PIN_RESET);
 	};
 	auto Buzzer = [](bool on) { 
 		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET): 
 		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET);
 	};
-    LedController::Init(RedLed,GreenLed,BlueLed,Buzzer);
+    auto PumpControl = [](bool on) {
+        on ? HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_SET): 
+             HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_RESET);
+    };
+
+
+    LedController::Init(ErrorLed,CommunicationLed,PumpOn,Buzzer,PumpControl);
 
     xTaskCreate(
     LedTask,

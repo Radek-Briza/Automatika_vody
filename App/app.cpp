@@ -97,7 +97,7 @@ void RequestSendTask(void* argument){
 	while (true){
        vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
 	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
-	   LedController::SetMode(LedController::Leds::Blue,LedController::LedMode::OneShot);
+	   LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::OneShot);
 	   gAliveMask.fetch_or(TASK_REQ_SENDER_BIT);
     }
 }
@@ -149,14 +149,13 @@ void ResponseHandlerTask(void* argument){
 			 if(CommunicationError){
 				CommunicationError = false; 
 				LedController::SetMode(
-    				LedController::Leds::Red,
+    				LedController::Leds::ErrorLed,
     		    	LedController::LedMode::Off);
 					LedController::SetMode(
 					LedController::Leds::Buzzer,
 					LedController::LedMode::Off);
 			 }
-
-			LedController::SetMode(LedController::Leds::Green,LedController::LedMode::OneShot);
+			LedController::SetMode(LedController::Leds::CommunicationLed,LedController::LedMode::OneShot);
 		
 		
 		} /* communication error */
@@ -178,7 +177,7 @@ void ResponseHandlerTask(void* argument){
 				configASSERT(ok  == pdPASS) ;
 
 				LedController::SetMode(
-    				LedController::Leds::Red,
+    				LedController::Leds::ErrorLed,
     		    	LedController::LedMode::Blink);
 				LedController::SetMode(
 					LedController::Leds::Buzzer,

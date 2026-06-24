@@ -23,11 +23,9 @@ void SendButtonEvent(uint8_t id, ButtonEventType evt){
         #endif 
 }
 
-ButtonContext gButtons[4] ={
-    { BT_1_GPIO_Port, BT_1_Pin },
-    { BT_2_GPIO_Port, BT_2_Pin },
-    { BT_3_GPIO_Port, BT_3_Pin },
-    { Deblock_GPIO_Port, Deblock_Pin }
+ButtonContext gButtons[2] ={
+    { Deblock_GPIO_Port, Deblock_Pin},
+    {AUTOMATIKA_ON_GPIO_Port, AUTOMATIKA_ON_Pin}
 };
 
 bool IsButtonPressed(const ButtonContext& btn){
