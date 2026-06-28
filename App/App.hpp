@@ -18,8 +18,8 @@
 template<typename T>
 inline uint32_t ParsePayload(const std::vector<uint8_t>& data, std::size_t index){
     static_assert(
-        std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t>,
-        "Supported types: uint16_t, uint32_t"
+        std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t>,
+        "Supported types: uint8_t, uint16_t, uint32_t"
     );
 
     constexpr std::size_t type_size = sizeof(T);

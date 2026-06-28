@@ -93,10 +93,15 @@ void InitPumpSystem(void){
 /* transmit request task */
 [[maybe_unused]] 
 void RequestSendTask(void* argument){ 
-    
+    static uint8_t VolatageReadReq = BATTERY_REQUEST_INTERVAL;
 	while (true){
        vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
-	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
+	   if(VolatageReadReq-- == 0){
+		   VolatageReadReq = BATTERY_REQUEST_INTERVAL;
+		   DataTransmit::GetInstance().SendRquest(Packet::Battery_request);
+		   }else{
+	   		DataTransmit::GetInstance().SendRquest(Packet::Level_request);
+		   }
 	   LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::OneShot);
 	   gAliveMask.fetch_or(TASK_REQ_SENDER_BIT);
     }
@@ -119,6 +124,7 @@ void ResponseHandlerTask(void* argument){
 			printf("Data received successfully, type: %d\n", DataTransmit::GetInstance().GetReceivedDataType());
 			#endif
 			DataTransmit::GetInstance().DataAvailable = false; // Reset flag after processing
+			/* level response */
 			if(DataTransmit::GetInstance().GetReceivedDataType()==Packet::Level_response){
 				uint32_t level_value = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);
 				uint32_t  level_status = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 1); 
@@ -145,6 +151,7 @@ void ResponseHandlerTask(void* argument){
 				);
 				configASSERT(ok  == pdPASS) ;		
 			}
+
 			 /* communication error - end error led   */
 			 if(CommunicationError){
 				CommunicationError = false; 
@@ -156,7 +163,21 @@ void ResponseHandlerTask(void* argument){
 					LedController::LedMode::Off);
 			 }
 			LedController::SetMode(LedController::Leds::CommunicationLed,LedController::LedMode::OneShot);
-		
+			
+			/* battery request */
+			if(DataTransmit::GetInstance().GetReceivedDataType()==Packet::Battery_response){
+				uint8_t battery_level =	 ParsePayload<uint8_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);
+				printf("Battery level: %d%%\n", battery_level);
+				/* display */
+				msgDisplay.MsgType = MsgDataType::BatteryLevel;
+				msgDisplay.Data = battery_level;
+				auto ok = xQueueSend(
+            	QueueDisplay,
+            	&msgDisplay ,
+            	pdMS_TO_TICKS(100)
+        		);
+				configASSERT(ok  == pdPASS) ;
+			}
 		
 		} /* communication error */
 		else if(DataTransmit::GetInstance().SlaveNotResponding){
