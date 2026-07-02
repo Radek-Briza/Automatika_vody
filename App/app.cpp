@@ -149,7 +149,9 @@ void ResponseHandlerTask(void* argument){
 					&msgPumpControl ,
 					pdMS_TO_TICKS(100)
 				);
-				configASSERT(ok  == pdPASS) ;		
+				configASSERT(ok  == pdPASS) ;	
+				
+				
 			}
 
 			 /* communication error - end error led   */

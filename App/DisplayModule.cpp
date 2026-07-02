@@ -4,6 +4,7 @@
 #include "Message.hpp"
 #include <cstdio>
 #include "SSD1306_OLED.hpp"
+#include "Common.hpp"
 
 #define myOLEDwidth  128
 #define myOLEDheight 64
@@ -11,7 +12,7 @@
 
 /* bitova maska  priznaku napisu*/
 enum class DisplayUpdate{
-    LevelData = (1u << 0),
+    LevelDataAndBattery = (1u << 0),
     PumpRun = (1u << 1), 
     PumpError = (1u << 2),
     CommunicationError = (1u << 3)
@@ -26,6 +27,10 @@ void DisplayTask(void* argument){
     uint32_t displayUpdate = 0;
     bool displayNeedsUpdate = false; 
     uint8_t step =0;
+    uint8_t BatteryLevel = 0;
+    bool MaxLevelReached = false;
+    int16_t  MaxLevel_value = 0;
+    uint16_t  Level_value_mem = 0;
     
     //oled initialization 
     #if  DISPLAY_MODULE_ENABLE
@@ -72,11 +77,26 @@ void DisplayTask(void* argument){
                     printf("<< KOMUNIKACE OBNOVENA >>\n");
                 }
 			    printf("<< AKTUALNI HLADINA: %u cm >>\n", static_cast<unsigned int>(msg.Data));
-                displayUpdate |= static_cast<uint32_t>(DisplayUpdate::LevelData);
+                displayUpdate |= static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery);
+                displayUpdate &= ~static_cast<uint32_t>(DisplayUpdate::CommunicationError);
+                displayNeedsUpdate = true;               
+            }
+
+            /* max level */
+            if(msg.MsgType == MsgDataType::MaxLevel ){
+                MaxLevelReached = true;
+                MaxLevel_value =Level_value_mem;
+                continue;
+            }
+
+            /* battery level */
+            if(msg.MsgType == MsgDataType::BatteryLevel ){
+                BatteryLevel = static_cast<uint8_t>(msg.Data);
+                displayUpdate |= static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery);
                 displayUpdate &= ~static_cast<uint32_t>(DisplayUpdate::CommunicationError);
                 displayNeedsUpdate = true;
-                        
             }
+
             /* communication error rise */
              if(msg.MsgType == MsgDataType::CommunicationError && msg.Data ==1){      
                 if(! CommunicationError ){
@@ -151,19 +171,33 @@ void DisplayTask(void* argument){
             }
 
             /* level data */           
-            if(static_cast<uint32_t>(displayUpdate) & static_cast<uint32_t>(DisplayUpdate::LevelData)){
+            if(static_cast<uint32_t>(displayUpdate) & static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery)){
+                Level_value_mem = static_cast<uint16_t>(msg.Data);
+                if(MaxLevelReached && Level_value_mem < MaxLevel_value){
+                    MaxLevelReached = false;
+                }
                 myOLED.OLEDclearBuffer();
                 myOLED.setTextSize(2);
                 myOLED.setCursor(0, 0);
                 myOLED.print("Hladina:");
-                myOLED.setTextSize(3);
+                myOLED.setTextSize(2);
                 myOLED.setCursor(0, 
                     25);  
                 myOLED.print(msg.Data);
-                displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::LevelData));
+                myOLED.print(" cm");
+                if(MaxLevelReached){     
+                    myOLED.print("MAX");
+                }
+                myOLED.setTextSize(2);
+                myOLED.setCursor(0, 50);    
+                 myOLED.print("Batt: ");
+                myOLED.print(BatteryLevel);
+                myOLED.print("%");
+                displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery));
             }
+            
 
-            /* pumm run animation */
+                /* pumm run animation */
              if(static_cast<uint32_t>(displayUpdate) & static_cast<uint32_t>(DisplayUpdate::PumpRun)){        
                 myOLED.drawCircle(80,40,15,WHITE);
                 // Triangle vertices on circle with center (80,40) and radius 15

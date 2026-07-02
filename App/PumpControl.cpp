@@ -150,7 +150,9 @@ void PumpControler::ControlPump(){
             
                 /* max limit , turn off pump  */
                 case LEVEL_H:
-            default:
+                 NewMessage = DisplayMessageType::MaxLevel;
+
+                default:
                     if(PumpRun){
                         PumpRun = false;
                         auto Ok = xTimerStop(PumpRunTimer,0U);

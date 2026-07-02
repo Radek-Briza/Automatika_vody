@@ -14,6 +14,7 @@ enum class MsgDataType {
     PumpError,
     CommunicationError,
     AtomatikaOff,
+    MaxLevel,
     UnknownDataType
 };
 

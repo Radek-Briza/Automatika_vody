@@ -21,6 +21,7 @@ class PumpControler {
             NoMessage,
             PumpRun,
             PumpStop,
+            MaxLevel
         };
      using LedHandler = std::function<void(bool)>; 
             

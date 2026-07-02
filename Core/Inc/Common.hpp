@@ -12,7 +12,7 @@ constexpr uint32_t PARAM_STORAGE_ADDRESS = 0x0803F800;
 // debug print switches 
 #define  RADIO_DEBUG_PRINT      1
 #define  APP_DEBUG_PRINT        1
-#define  DISPLAY_MODULE_ENABLE  0
+#define  DISPLAY_MODULE_ENABLE  1
 
 #define WDT_ENABLE          0
 
