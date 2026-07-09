@@ -150,7 +150,7 @@ extern "C" int main(void)
     Error_Handler();
   }
 
-  printf("\r\nAutomatika vody ver 1.00 \r\n") ;
+  printf("\r\nAutomatika vody ver 1.01 \r\n") ;
 
   auto Ok =  xTaskCreate(
       DisplayTask,

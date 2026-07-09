@@ -15,8 +15,8 @@
 
             "device": "STM32WL55JCI6",
 
-            //"serialNumber": "003400395553500820393256",
-            "serialNumber": "0007001E5553500820393256",
+            "serialNumber": "003400395553500820393256",
+            //"serialNumber": "0007001E5553500820393256",
 
             "runToEntryPoint": "main",
 

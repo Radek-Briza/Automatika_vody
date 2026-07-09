@@ -14,7 +14,10 @@ TimerHandle_t PumpControler::PumpRunTimer=nullptr;
 QueueHandle_t PumpControler::QueuePumpControl=nullptr;
 Message PumpControler::msgDisplay={};
 Message PumpControler::msgPumpControl ={};
-bool PumpControler::AutomaticModeOn = false;
+bool PumpControler::AutomaticModeOn = true;
+uint16_t  PumpControler::LevelActual = 0;
+uint16_t  PumpControler::LevelOld = 0;
+bool PumpControler::StoreNewLevel = false;
 
 
 /* pump overtime  handler */
@@ -22,6 +25,15 @@ bool PumpControler::AutomaticModeOn = false;
 void PumpOvertimerCallback(TimerHandle_t xTimer){
     if(PumpControler::PumpRun){
        
+        /* test level increase */
+        printf("Pump overtime - level actual: %u, level old: %u\r\n", static_cast<unsigned int>(PumpControler::LevelActual), static_cast<unsigned int>(PumpControler::LevelOld));
+        if(PumpControler::LevelActual > PumpControler::LevelOld+1){
+            PumpControler::LevelOld = PumpControler::LevelActual;
+            auto Ok = xTimerStart(PumpControler::PumpRunTimer,0U);
+            configASSERT(Ok == pdPASS);
+            return;
+        }
+
         #if APP_DEBUG_PRINT
         printf("Pump overtime - OFF\r\n");
         #endif
@@ -48,6 +60,7 @@ void PumpOvertimerCallback(TimerHandle_t xTimer){
     }
 }
 
+/* init  class */
 void PumpControler::Init(QueueHandle_t &QueuePumpControl_,
                           std::function<void(bool)> PumpControlPin_ ){
  
@@ -102,7 +115,18 @@ void PumpControler::ControlPump(){
             }
         }
 
+        /* level value  */
+         if(StatusMsg.MsgType == MsgDataType::LevelData ){
+            LevelActual = StatusMsg.Data;
+            if(StoreNewLevel == true) {
+               StoreNewLevel = false ;
+            LevelOld = LevelActual;
+           }
+         }
+
+        /* level status */
         if(StatusMsg.MsgType == MsgDataType::LevelStatusData ){
+            printf("<< LEVEL STATUS: %u >>\r\n", static_cast<unsigned int>(StatusMsg.Data));
             if(!ErrorCondition){
                 switch (StatusMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
                     
@@ -123,7 +147,7 @@ void PumpControler::ControlPump(){
                         LedController::SetMode(
 					LedController::Leds::Buzzer,
 					LedController::LedMode::OneShot);
-               
+                        StoreNewLevel = true;
                         #if APP_DEBUG_PRINT
                         printf("Pump ON(1)\r\n");
                         #endif
@@ -137,15 +161,15 @@ void PumpControler::ControlPump(){
                     configASSERT(Ok == pdPASS);
                     LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::On);
                     PumpControlPin(true);
-                     NewMessage = DisplayMessageType::PumpRun;
-                      LedController::SetMode(
+                    StoreNewLevel = true;
+                    NewMessage = DisplayMessageType::PumpRun;
+                    LedController::SetMode(
 					LedController::Leds::Buzzer,
 					LedController::LedMode::OneShot);
                     #if APP_DEBUG_PRINT
                     printf("Pump ON(2)\r\n");
                     #endif
-                    }
-                
+                    }           
                 break;    
             
                 /* max limit , turn off pump  */

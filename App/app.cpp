@@ -141,7 +141,7 @@ void ResponseHandlerTask(void* argument){
         		);
 				configASSERT(ok  == pdPASS) ;
 				
-				/* pump control  */
+				/* pump control  - status  data */
 				msgPumpControl.MsgType = MsgDataType::LevelStatusData;
 				msgPumpControl.Data = level_status;
 				ok = xQueueSend(
@@ -149,9 +149,17 @@ void ResponseHandlerTask(void* argument){
 					&msgPumpControl ,
 					pdMS_TO_TICKS(100)
 				);
-				configASSERT(ok  == pdPASS) ;	
-				
-				
+				configASSERT(ok  == pdPASS) ;		
+
+				/* pump control  - level   data */
+				msgPumpControl.MsgType = MsgDataType::LevelData;
+				msgPumpControl.Data = level_value;
+				ok = xQueueSend(
+					QueuePumpControl,
+					&msgPumpControl ,
+					pdMS_TO_TICKS(100)
+				);
+				configASSERT(ok  == pdPASS) ;		
 			}
 
 			 /* communication error - end error led   */

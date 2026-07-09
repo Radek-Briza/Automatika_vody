@@ -28,9 +28,9 @@ void DisplayTask(void* argument){
     bool displayNeedsUpdate = false; 
     uint8_t step =0;
     uint8_t BatteryLevel = 0;
-    bool MaxLevelReached = false;
     int16_t  MaxLevel_value = 0;
     uint16_t  Level_value_mem = 0;
+    bool PumpRunAnimation = false;
     
     //oled initialization 
     #if  DISPLAY_MODULE_ENABLE
@@ -79,14 +79,8 @@ void DisplayTask(void* argument){
 			    printf("<< AKTUALNI HLADINA: %u cm >>\n", static_cast<unsigned int>(msg.Data));
                 displayUpdate |= static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery);
                 displayUpdate &= ~static_cast<uint32_t>(DisplayUpdate::CommunicationError);
-                displayNeedsUpdate = true;               
-            }
-
-            /* max level */
-            if(msg.MsgType == MsgDataType::MaxLevel ){
-                MaxLevelReached = true;
-                MaxLevel_value =Level_value_mem;
-                continue;
+                displayNeedsUpdate = true;   
+                 Level_value_mem = static_cast<uint16_t>(msg.Data);            
             }
 
             /* battery level */
@@ -122,12 +116,16 @@ void DisplayTask(void* argument){
 			    printf("<< CERPADLO ZAPNUTO >>\n");
                 displayUpdate |= static_cast<uint32_t>(DisplayUpdate::PumpRun);
                 displayNeedsUpdate = true;
+                PumpRunAnimation = true;  
+                step = 0;
             }
              /* pump stop */
              if(msg.MsgType == MsgDataType::PumpStatus && msg.Data ==0){        
 			    printf("<< CERPADLO  VYPNUTO >>\n");
                 displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::PumpRun));
                 displayNeedsUpdate = true;
+                MaxLevel_value = Level_value_mem ;
+                PumpRunAnimation = false;   
                  step =0;
             }
             /* automatika off */
@@ -150,7 +148,7 @@ void DisplayTask(void* argument){
                 myOLED.setCursor(0, 0);
                 myOLED.print("CHYBA CERPADLA");
                 myOLED.setTextSize(3);
-                myOLED.setCursor(0, 25);
+                myOLED.setCursor(0, 30);
                 myOLED.print(msg.Data);
                 myOLED.OLEDupdate();
                 continue;
@@ -170,12 +168,9 @@ void DisplayTask(void* argument){
                 continue;
             }
 
+        
             /* level data */           
             if(static_cast<uint32_t>(displayUpdate) & static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery)){
-                Level_value_mem = static_cast<uint16_t>(msg.Data);
-                if(MaxLevelReached && Level_value_mem < MaxLevel_value){
-                    MaxLevelReached = false;
-                }
                 myOLED.OLEDclearBuffer();
                 myOLED.setTextSize(2);
                 myOLED.setCursor(0, 0);
@@ -183,44 +178,68 @@ void DisplayTask(void* argument){
                 myOLED.setTextSize(2);
                 myOLED.setCursor(0, 
                     25);  
-                myOLED.print(msg.Data);
+                myOLED.print(Level_value_mem);
                 myOLED.print(" cm");
-                if(MaxLevelReached){     
-                    myOLED.print("MAX");
-                }
+                if(PumpRunAnimation == true ){
+                    switch (step)
+                    {
+                    default:
+                    case 0:
+                        myOLED.print(" >");
+                        step = 1;
+                        break;
+                    case 1:
+                    myOLED.print("  >");
+                        step = 2;
+                        break;
+                    case 2:
+                    myOLED.print("   >");
+                        step = 0;
+                        
+                    }
+                } else if(Level_value_mem == MaxLevel_value && MaxLevel_value  != 0){     
+                    myOLED.print(" MAX");
+                    }
                 myOLED.setTextSize(2);
                 myOLED.setCursor(0, 50);    
-                 myOLED.print("Batt: ");
+                myOLED.print("Batt: ");
                 myOLED.print(BatteryLevel);
                 myOLED.print("%");
                 displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery));
             }
-            
-
-                /* pumm run animation */
-             if(static_cast<uint32_t>(displayUpdate) & static_cast<uint32_t>(DisplayUpdate::PumpRun)){        
-                myOLED.drawCircle(80,40,15,WHITE);
-                // Triangle vertices on circle with center (80,40) and radius 15
-                switch (step){
-
-                 case 0:
-                  myOLED.drawTriangle(80,25, 69,51, 91,51, BLACK);
-                    myOLED.drawTriangle(80,45, 69,51, 91,51, WHITE);
-                    step++;
+            else if(PumpRunAnimation  ){
+                myOLED.OLEDclearBuffer();
+                myOLED.setTextSize(2);
+                myOLED.setCursor(0, 0);
+                myOLED.print("Hladina:");
+                myOLED.setTextSize(2);
+                myOLED.setCursor(0, 25);  
+                myOLED.print(Level_value_mem);
+                myOLED.print(" cm");
+                switch (step)
+                {
+                default:
+                case 0:
+                    myOLED.print(" >");
+                    step = 1;
                     break;
                 case 1:
-                    myOLED.drawTriangle(80,45, 69,51, 91,51, BLACK);
-                    myOLED.drawTriangle(80,35, 69,51, 91,51, WHITE);
-                    step++;
+                myOLED.print("  >");
+                    step = 2;
                     break;
                 case 2:
-                    myOLED.drawTriangle(80,35, 69,51, 91,51, BLACK);
-                    myOLED.drawTriangle(80,25, 69,51, 91,51, WHITE);
-                    step =0;
-                    break;    
-                }
-               
+                myOLED.print("   >");
+                    step = 0;
+                    break;
+                }           
+
+                myOLED.setTextSize(2);
+                myOLED.setCursor(0, 50);    
+                myOLED.print("Batt: ");
+                myOLED.print(BatteryLevel);
+                myOLED.print("%");      
             }
+            
             myOLED.OLEDupdate();
             if(displayUpdate == 0){
                 displayNeedsUpdate = false;

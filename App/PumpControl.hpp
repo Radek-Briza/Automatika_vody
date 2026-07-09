@@ -2,6 +2,7 @@
 
 #include "Message.hpp" 
 #include "timers.h"
+#include <cstdint>
 #include <functional>
 //#include <type_traits>
 #include "LedController.hpp"
@@ -48,6 +49,9 @@ class PumpControler {
         static QueueHandle_t QueuePumpControl;
         static Message msgDisplay;
         static Message msgPumpControl;
+        static uint16_t LevelActual;
+        static uint16_t LevelOld;
+        static bool StoreNewLevel;
 
         friend void PumpOvertimerCallback(TimerHandle_t xTimer);
 };
