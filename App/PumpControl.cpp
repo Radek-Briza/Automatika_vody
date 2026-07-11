@@ -92,8 +92,7 @@ void PumpControler::ControlPump(){
 
     /* new message - level status */
     if(ok == pdPASS){
-
-          /* emergency off */
+        /* emergency off */
           if(StatusMsg.MsgType == MsgDataType::PumpError){
             if(ErrorCondition==false){
                 ErrorCondition = true;

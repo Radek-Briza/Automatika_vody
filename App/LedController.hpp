@@ -40,7 +40,7 @@ public:
         LedCallback green,
         LedCallback blue,
         LedCallback buzzer,
-        LedCallback pumpOn
+        LedCallback AutomatOn
     );
 
     static bool Acquire(Leds led);

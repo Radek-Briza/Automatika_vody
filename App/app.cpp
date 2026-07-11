@@ -75,8 +75,8 @@ void PumpControlTask(void* argument){
 void InitPumpSystem(void){
   	
 	auto RunPin = [](bool on) { 
-		on ? HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_SET): 
-		     HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_RESET);
+		on ? HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_RESET): 
+		     HAL_GPIO_WritePin(PUMP_CONTROL_GPIO_Port,PUMP_CONTROL_Pin, GPIO_PIN_SET);
 	};
 	PumpControler::GetInstance().Init(QueuePumpControl,RunPin) ;
 	
@@ -102,7 +102,7 @@ void RequestSendTask(void* argument){
 		   }else{
 	   		DataTransmit::GetInstance().SendRquest(Packet::Level_request);
 		   }
-	   LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::OneShot);
+	   LedController::SetMode(LedController::Leds::CommunicationLed,LedController::LedMode::OneShot);
 	   gAliveMask.fetch_or(TASK_REQ_SENDER_BIT);
     }
 }
@@ -174,6 +174,10 @@ void ResponseHandlerTask(void* argument){
 			 }
 			LedController::SetMode(LedController::Leds::CommunicationLed,LedController::LedMode::OneShot);
 			
+			/* task delay 10 ms*/
+			 vTaskDelay(pdMS_TO_TICKS(10));
+			
+
 			/* battery request */
 			if(DataTransmit::GetInstance().GetReceivedDataType()==Packet::Battery_response){
 				uint8_t battery_level =	 ParsePayload<uint8_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);

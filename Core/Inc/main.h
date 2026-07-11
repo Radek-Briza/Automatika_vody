@@ -87,6 +87,9 @@ void Error_Handler(void);
 #define AUTOMATIKA_ON_GPIO_Port GPIOA
 #define CERPADLO_ON_Pin GPIO_PIN_4
 #define CERPADLO_ON_GPIO_Port GPIOA
+#define AUTOMATIKA_ON_LED_GPIO_Port GPIOA
+#define AUTOMATIKA_ON_LED_Pin  GPIO_PIN_5
+
 
 /* USER CODE BEGIN Private defines */
 

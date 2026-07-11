@@ -21,7 +21,7 @@ bool DataTransmit::DataOverload = false;
 const struct Radio_s* DataTransmit::RadioDriver = nullptr;
 RadioEvents_t DataTransmit::RadioEvents = {};
 TimerHandle_t DataTransmit::CadTimer= nullptr;
-TimerHandle_t DataTransmit::RxTimeoutTimer = nullptr;
+//TimerHandle_t DataTransmit::RxTimeoutTimer = nullptr;
 Packet DataTransmit::packet = {};
 bool DataTransmit::SlaveNotResponding = false;
 Packet::PacketType DataTransmit::DataType = Packet::Type_undefined;
@@ -46,6 +46,7 @@ void RadioCadTimeoutIrq( void *context ){
 	#endif
 }
 
+/*
 [[maybe_unused]] 
 void RxTimeoutTimerCallback(TimerHandle_t xTimer){
 	if( DataTransmit::MasterMode == true){
@@ -59,6 +60,7 @@ void RxTimeoutTimerCallback(TimerHandle_t xTimer){
 		}
 	}	
 }
+*/
 
 extern "C" void OnCadDone( bool channelActivityDetected ){
 	if(channelActivityDetected){
@@ -79,11 +81,10 @@ extern "C" void OnCadDone( bool channelActivityDetected ){
 
 extern "C" void OnTxDone(void){
 	if( DataTransmit::MasterMode == true){
-		DataTransmit::timeout = 0;
-		DataTransmit::RadioDriver->Rx(0); // Po odeslání požadavku přepneme rádio do přijímacího režimu
+		DataTransmit::RadioDriver->Rx(DataTransmit::ResponseTimeout); // Po odeslání požadavku přepneme rádio do přijímacího režimu
 		BaseType_t hpw = pdFALSE;
-		auto Ok = xTimerStartFromISR(DataTransmit::RxTimeoutTimer,&hpw);
-		configASSERT(Ok == pdPASS);
+		//auto Ok = xTimerStartFromISR(DataTransmit::RxTimeoutTimer,&hpw);
+		//configASSERT(Ok == pdPASS);
 		#if RADIO_DEBUG_PRINT 
 		printf("Transmission done, starting RX\n");
 		#endif
@@ -99,13 +100,14 @@ extern "C" void OnTxDone(void){
 /* Callback functions - Rx complete */
 extern "C" void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskCfo){
 	DataTransmit::RequestSent = false;
-	#if RADIO_DEBUG_PRINT 
-	printf("Received packet: size=%u, rssi=%d, snr=%d\n", size, rssi, LoraSnr_FskCfo);
-	#endif
 	
+	#if RADIO_DEBUG_PRINT 
+	printf("Received packet: size=%u, rssi=%d, snr=%d time-out=%d\n", size, rssi, LoraSnr_FskCfo,DataTransmit::timeout);
+	#endif
+	DataTransmit::timeout = 0;
 	BaseType_t hpw = pdFALSE;
-	auto Ok = xTimerStopFromISR(DataTransmit::RxTimeoutTimer ,&hpw);
-	configASSERT(Ok == pdPASS);
+	//auto Ok = xTimerStopFromISR(DataTransmit::RxTimeoutTimer ,&hpw);
+	//configASSERT(Ok == pdPASS);
 
 	// kopírujeme payload do packetu pro další zpracování
 	std::array<uint8_t, Packet::max_packet_size> buffer{};
@@ -134,19 +136,18 @@ extern "C" void OnTxTimeout(void){
 
 extern "C" void OnRxTimeout(void){
 	if( DataTransmit::MasterMode == true){
-		if(++DataTransmit::timeout < 4){ // Po 3 neúspěšných pokusech o příjem dat považujeme slave za nereagujícího
+		if(++DataTransmit::timeout > 6){ // Po 5 neúspěšných pokusech o příjem dat považujeme slave za nereagujícího
 			DataTransmit::RadioDriver->Standby( );
 			DataTransmit::RadioDriver->Rx(DataTransmit::ResponseTimeout);
-			#if RADIO_DEBUG_PRINT 
-			printf("restarting RX\n");
-			#endif
-			return;
+			DataTransmit::timeout = 0;
+			if(DataTransmit::RequestSent){
+				DataTransmit::RequestSent = false;
+				DataTransmit::SlaveNotResponding = true;
+			}			
 		}
-		DataTransmit::timeout = 0;
-		if(DataTransmit::RequestSent){
-			DataTransmit::RequestSent = false;
-			DataTransmit::SlaveNotResponding = true;
-		}
+		#if RADIO_DEBUG_PRINT 
+		printf("Rx timeout,restarting RX, time-out= %d\n",DataTransmit::timeout);
+		#endif		
 		return; // pokud jsme v master modu, neprovádíme CAD
 	}
 	DataTransmit::RadioDriver->Standby( );
@@ -208,6 +209,7 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
     	configASSERT(CadTimer != nullptr);
 	}
 	else{
+		/*
 		// one shot timer - response overtime 
 		RxTimeoutTimer = xTimerCreate(
         "Rx timeout",
@@ -216,6 +218,7 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
         nullptr,
         RxTimeoutTimerCallback);
     	configASSERT(RxTimeoutTimer != nullptr);
+		*/
 	}
 		
 	DataAvailable = false;		

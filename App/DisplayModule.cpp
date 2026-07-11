@@ -80,7 +80,7 @@ void DisplayTask(void* argument){
                 displayUpdate |= static_cast<uint32_t>(DisplayUpdate::LevelDataAndBattery);
                 displayUpdate &= ~static_cast<uint32_t>(DisplayUpdate::CommunicationError);
                 displayNeedsUpdate = true;   
-                 Level_value_mem = static_cast<uint16_t>(msg.Data);            
+                Level_value_mem = static_cast<uint16_t>(msg.Data);            
             }
 
             /* battery level */
@@ -104,6 +104,7 @@ void DisplayTask(void* argument){
             if(msg.MsgType == MsgDataType::PumpError && msg.Data ==1){  
                 displayUpdate |= static_cast<uint32_t>(DisplayUpdate::PumpError);
                 displayNeedsUpdate = true;      
+                MaxLevel_value = Level_value_mem ;
 			    printf("<< CHYBA CERPADLA >>\n");
             }
             /* pump error clear */
@@ -124,9 +125,10 @@ void DisplayTask(void* argument){
 			    printf("<< CERPADLO  VYPNUTO >>\n");
                 displayUpdate = static_cast<uint32_t>(static_cast<uint32_t>(displayUpdate) & ~static_cast<uint32_t>(DisplayUpdate::PumpRun));
                 displayNeedsUpdate = true;
-                MaxLevel_value = Level_value_mem ;
+                MaxLevel_value = 0;
+                 MaxLevel_value = Level_value_mem ;
                 PumpRunAnimation = false;   
-                 step =0;
+                step =0;
             }
             /* automatika off */
             if(msg.MsgType == MsgDataType::AtomatikaOff && msg.Data ==0){        
@@ -146,10 +148,11 @@ void DisplayTask(void* argument){
                 myOLED.OLEDclearBuffer();
                 myOLED.setTextSize(2);
                 myOLED.setCursor(0, 0);
-                myOLED.print("CHYBA CERPADLA");
+                myOLED.print("CHYBA     CERPADLA");
                 myOLED.setTextSize(3);
-                myOLED.setCursor(0, 30);
-                myOLED.print(msg.Data);
+                myOLED.setCursor(0, 40);
+                myOLED.print(Level_value_mem);
+                myOLED.print(" cm");
                 myOLED.OLEDupdate();
                 continue;
             }
@@ -194,10 +197,14 @@ void DisplayTask(void* argument){
                         break;
                     case 2:
                     myOLED.print("   >");
+                        step = 3;
+                        break;
+                    case 3:
+                    myOLED.print("    >");
                         step = 0;
-                        
+                        break;    
                     }
-                } else if(Level_value_mem == MaxLevel_value && MaxLevel_value  != 0){     
+                } else if(Level_value_mem == MaxLevel_value && MaxLevel_value != 0){     
                     myOLED.print(" MAX");
                     }
                 myOLED.setTextSize(2);
@@ -228,9 +235,13 @@ void DisplayTask(void* argument){
                     step = 2;
                     break;
                 case 2:
-                myOLED.print("   >");
-                    step = 0;
+                    myOLED.print("   >");
+                    step = 3;
                     break;
+                 case 3:
+                    myOLED.print("    >");
+                        step = 0;
+                        break;        
                 }           
 
                 myOLED.setTextSize(2);

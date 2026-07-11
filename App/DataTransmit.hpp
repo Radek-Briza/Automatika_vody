@@ -59,7 +59,7 @@ private:
 	static const struct Radio_s *RadioDriver;
 	static const uint32_t CAD_sample = 200U; /* ms*/
 	static const uint32_t RxReceiverMaxRunTime =  2000;	
-	static  const uint32_t ResponseTimeout = ADC_CHANNEL_6; /* ms*/
+	static  const uint32_t ResponseTimeout = 1800; /* ms*/
 	static RadioEvents_t RadioEvents;
 	static TimerHandle_t CadTimer;
 	static TimerHandle_t RxTimeoutTimer;

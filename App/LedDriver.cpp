@@ -16,14 +16,13 @@ void LedController::Init(
     LedCallback led1,
     LedCallback led2,
     LedCallback buzzer, 
-    LedCallback pumpControl){
+    LedCallback AutomatOn){
     
     callbacks_[0] = led0;
     callbacks_[1] = led1;
     callbacks_[2] = led2;
     callbacks_[3] = buzzer;
-    callbacks_[4] = pumpControl;
-
+    callbacks_[4] =AutomatOn;
     leds_[0].mode.store(
         LedMode::Off,
         std::memory_order_relaxed);
@@ -193,13 +192,20 @@ void LedDriverInit(){
 		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET): 
 		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET);
 	};
-    auto PumpControl = [](bool on) {
+    /*
+    auto AutoPumpControl = [](bool on) {
         on ? HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_SET): 
              HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_RESET);
     };
+    */
+    auto AutomatikaOn = [](bool on){
+        on ? HAL_GPIO_WritePin(AUTOMATIKA_ON_LED_GPIO_Port,AUTOMATIKA_ON_LED_Pin, GPIO_PIN_SET): 
+             HAL_GPIO_WritePin(AUTOMATIKA_ON_LED_GPIO_Port,AUTOMATIKA_ON_LED_Pin, GPIO_PIN_RESET);
+    };
 
+    
 
-    LedController::Init(ErrorLed,CommunicationLed,PumpOn,Buzzer,PumpControl);
+    LedController::Init(ErrorLed,CommunicationLed,PumpOn,Buzzer,AutomatikaOn);
 
     xTaskCreate(
     LedTask,
