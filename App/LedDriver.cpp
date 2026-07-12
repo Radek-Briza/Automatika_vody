@@ -136,16 +136,16 @@ void LedController::Task(){
             {
                 case LedMode::Off:
                     callbacks_[i](false);
-                 //   printf("LED %d OFF\r\n",i);
+                    //printf("LED %d OFF\r\n",i);
                     break;
 
                 case LedMode::On:
                     callbacks_[i](true);
+                    //printf("LED %d ON\r\n",i);
                     break;
 
                 case LedMode::Blink:
                     callbacks_[i](blinkState);
-                    //printf("LED %d BLINK %d\r\n",i,blinkState);
                     break;
 
                 case LedMode::OneShot: 
@@ -192,18 +192,26 @@ void LedDriverInit(){
 		on ? HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_RESET): 
 		     HAL_GPIO_WritePin(Buzzer_GPIO_Port,Buzzer_Pin, GPIO_PIN_SET);
 	};
-    /*
-    auto AutoPumpControl = [](bool on) {
-        on ? HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_SET): 
-             HAL_GPIO_WritePin(AUTOMATIKA_ON_GPIO_Port,AUTOMATIKA_ON_Pin, GPIO_PIN_RESET);
-    };
-    */
+    
     auto AutomatikaOn = [](bool on){
         on ? HAL_GPIO_WritePin(AUTOMATIKA_ON_LED_GPIO_Port,AUTOMATIKA_ON_LED_Pin, GPIO_PIN_SET): 
              HAL_GPIO_WritePin(AUTOMATIKA_ON_LED_GPIO_Port,AUTOMATIKA_ON_LED_Pin, GPIO_PIN_RESET);
     };
 
-    
+    ErrorLed(true);
+     CommunicationLed(true);
+     PumpOn(true);  
+     Buzzer(true);
+     AutomatikaOn(true);
+     //delay 500 ms
+    HAL_Delay(pdMS_TO_TICKS(1000));
+    // off leds
+    ErrorLed(false);
+    CommunicationLed(false);
+     PumpOn(false);  
+     Buzzer(false);
+     AutomatikaOn(false);
+
 
     LedController::Init(ErrorLed,CommunicationLed,PumpOn,Buzzer,AutomatikaOn);
 

@@ -18,6 +18,7 @@ public:
         CommunicationLed,
         PumpOnLed,
         Buzzer,
+        AutomatOnLed,
         Count
     };
 

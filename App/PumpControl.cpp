@@ -75,12 +75,27 @@ void PumpControler::Init(QueueHandle_t &QueuePumpControl_,
         nullptr,
         PumpOvertimerCallback);
     	configASSERT(PumpRunTimer != nullptr);
+
+
 }
 
 void PumpControler::ControlPump(){
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
     configASSERT(gButtonQueue != nullptr);
     DisplayMessageType NewMessage = DisplayMessageType::NoMessage;
+
+
+    /* automat LED on/off*/
+        if(PumpControler::AutomaticModeOn){
+            LedController::SetMode(
+                LedController::Leds::AutomatOnLed,
+                LedController::LedMode::On);
+            }
+            else{
+                LedController::SetMode(
+                LedController::Leds::AutomatOnLed,
+                LedController::LedMode::Off);
+            }
 
     /* get message  from radio module and timer  */
     Message StatusMsg;
@@ -92,6 +107,7 @@ void PumpControler::ControlPump(){
 
     /* new message - level status */
     if(ok == pdPASS){
+       
         /* emergency off */
           if(StatusMsg.MsgType == MsgDataType::PumpError){
             if(ErrorCondition==false){
@@ -152,6 +168,7 @@ void PumpControler::ControlPump(){
                         #endif
                     }
                     break;
+
                 /* drop level  */
                 case LEVEL_UNDER_M:
                 if(!PumpRun && AutomaticModeOn){
@@ -220,13 +237,17 @@ void PumpControler::ControlPump(){
     if(ok == pdPASS){
         /* enable automatic mode - if  enable pin is active */
         if(BtnMsg.buttonId==2) {
-           if(BtnMsg.event == ButtonEventType::Press){
+           if(BtnMsg.event == ButtonEventType::Press && AutomaticModeOn == false){
                 AutomaticModeOn = true;
-                LedController::SetMode(
-                LedController::Leds::PumpOnLed,
-                LedController::LedMode::On);
+              /*  LedController::SetMode(
+                LedController::Leds::AutomatOnLed,
+                LedController::LedMode::On); */
+                BtnMsg.event = ButtonEventType::Release;
                 printf("<<<< Automatika ON >>>>\r\n");
-            }else{
+            }
+
+            /* disable automatic mode */
+            if(BtnMsg.event == ButtonEventType::Press && AutomaticModeOn == true){
                 /* disable automatic mode */
                 msgDisplay.MsgType = MsgDataType::AtomatikaOff;
                 msgDisplay.Data = 0; // clear 
@@ -238,6 +259,10 @@ void PumpControler::ControlPump(){
                 configASSERT(ok  == pdPASS) ;
 
                 AutomaticModeOn = false;
+                LedController::SetMode(
+                LedController::Leds::AutomatOnLed,
+                LedController::LedMode::Off);
+                
                 if(PumpRun  ){
                     PumpRun = false;
                     auto Ok = xTimerStop(PumpRunTimer,0U);

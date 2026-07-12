@@ -174,14 +174,14 @@ extern "C" int main(void)
   configASSERT(Ok == pdPASS);
   #endif
   
+ LedDriverInit();
+
   InitApplication();
 
   InitPumpSystem() ; 
 
   ButtonControlInit();  
   
-  LedDriverInit();
-
   vTaskStartScheduler(); 
 
   /* We should never get here as control is now taken by the scheduler */
