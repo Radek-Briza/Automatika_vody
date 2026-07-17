@@ -212,18 +212,7 @@ void PumpControler::ControlPump(){
         }
      }   
     
-    /* send message to display if a some change */
-    if( NewMessage != DisplayMessageType::NoMessage){
-        PumpControler::msgDisplay.MsgType = MsgDataType::PumpStatus;
-        PumpControler::msgDisplay.Data = (NewMessage == DisplayMessageType::PumpRun) ? 1 : 0;
-        auto ok = xQueueSend(
-        QueueDisplay,
-        & PumpControler::msgDisplay ,
-        pdMS_TO_TICKS(300)
-        );
-        configASSERT(ok  == pdPASS) ;
-
-    }
+   
 
      /* message from button - possible unblock system   */
      MessageButton BtnMsg;
@@ -237,6 +226,31 @@ void PumpControler::ControlPump(){
     if(ok == pdPASS){
         /* enable automatic mode - if  enable pin is active */
         if(BtnMsg.buttonId==2) {
+
+        /* manual set pump on if long press */
+         if(BtnMsg.event == ButtonEventType::LongPress ){
+               LedController::SetMode(LedController::Leds::PumpOnLed,LedController::LedMode::On);
+                    PumpControlPin(true);
+                    PumpRun = true;
+                    StoreNewLevel = true;
+                    AutomaticModeOn = true;
+                    NewMessage = DisplayMessageType::PumpRun;
+                    LedController::SetMode(
+					LedController::Leds::Buzzer,
+					LedController::LedMode::OneShot);
+                    /* send message to display if a some change */
+                    auto ok = xQueueSend(
+                    QueueDisplay,
+                    & PumpControler::msgDisplay ,
+                    pdMS_TO_TICKS(300)
+                    );
+                    configASSERT(ok  == pdPASS) ;
+                    #if APP_DEBUG_PRINT
+                    printf("Pump ON(3)\r\n");
+                    #endif
+         }
+
+        /* enable  automatic mode */
            if(BtnMsg.event == ButtonEventType::Press && AutomaticModeOn == false){
                 AutomaticModeOn = true;
               /*  LedController::SetMode(
@@ -306,4 +320,15 @@ void PumpControler::ControlPump(){
 
     }
     
+     /* send message to display if a some change */
+    if( NewMessage != DisplayMessageType::NoMessage){
+        PumpControler::msgDisplay.MsgType = MsgDataType::PumpStatus;
+        PumpControler::msgDisplay.Data = (NewMessage == DisplayMessageType::PumpRun) ? 1 : 0;
+            auto ok = xQueueSend(
+            QueueDisplay,
+            & PumpControler::msgDisplay ,
+            pdMS_TO_TICKS(300)
+            );
+            configASSERT(ok  == pdPASS) ;
+    }
 }
